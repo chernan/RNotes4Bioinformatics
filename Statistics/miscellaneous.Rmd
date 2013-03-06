@@ -1,0 +1,16 @@
+Misc.
+========================================================
+
+I don't know yet how I'll organize this section...
+
+
+Normality assumption
+--------------------------------------------------------------------------------
+
+For a visual check, we can do QQ plots.
+https://en.wikipedia.org/wiki/Q-Q_plot
+It seems quite easy to do it in R, especially with the qqnorm function.
+http://www.duclert.org/Aide-memoire-R/Statistiques/Q-Q-plot.php
+
+If we want to check with a test, we can use the Shapiro-Wilk test.
+http://www.duclert.org/Aide-memoire-R/Statistiques/Tests-de-Shapiro-Wilk.php
