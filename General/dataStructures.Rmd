@@ -5,7 +5,7 @@ Any R object has 2 attributes: mode (type of data: logical, numeric, function, c
 
 
 R storage modes
--------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 Obtained by the typeof() function
 ```{r}
@@ -17,7 +17,7 @@ logical, numeric (integer or double), function (closure or builtin or special)
 
 
 Logical
-----------
+--------------------------------------------------------------------------------
 
 Easy to convert (and back) with numeric. But this easy conversion can cause problems.
 ```{r}
@@ -29,7 +29,7 @@ Never use F and T shortcuts for False and TRUE.
 
 
 Vector
--------------
+--------------------------------------------------------------------------------
 
 Contain values of the **same mode**.
 ```{r}
@@ -43,7 +43,7 @@ mode(x)
 
 
 Matrix
-------------------
+--------------------------------------------------------------------------------
 
 Can also access an element with one index
 ```{r}
@@ -58,11 +58,13 @@ As for vectors, all elements must be of the same mode. Insert a text, and all nu
 
 
 List
-----------------
+--------------------------------------------------------------------------------
 
 Is a collection of objects with different modes. Access either by rank or by name.
 ```{r}
-mylist <- list(ages=c(12,35,34,62), height=c(135,128,164,165), sex=c("M", "F", "M", "M"))
+mylist <- list(ages=c(12,35,34,62), 
+               height=c(135,128,164,165), 
+               sex=c("M", "F", "M", "M"))
 mylist[[1]]
 class(mylist[[1]])
 mylist[1]
@@ -73,21 +75,44 @@ mylist$height
 
 
 Data frames
-------------------
+--------------------------------------------------------------------------------
 
 List with each element has same number of elements.
 ```{r}
 data <- as.data.frame(mylist)
 data
 class(data); mode(data)
+```
+
+### Data access
+
+```{r}
 data[1]
 data[[1]]
-data$h
+data$height
 ```
-Always use labels for accessing columns, **full labels** as partial labels imply R checking for all column names.
+
+A good rule of thumb is to always **use labels** for accessing data frame columns (in case order changes), and **full labels** as partial labels imply R checking for all column names.
+
+### Subset
+
+Using negative indices (not valid with column names).
+```{r}
+data[ , -2] 
+```
+
+Using -grep() but be carefull of which column really matches.
+```{r}
+data[ , -grep("h", names(data))]
+```
+
+Using subset() and a - sign in front of the column name you want to discard.
+```{r}
+subset(data, select=-height)
+```
 
 Factors
-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 Represent categorical variables.
 
@@ -136,7 +161,7 @@ It can also be set in defaults options(stringsAsFactors=FALSE)
 
 
 Other related functions
-------------------------------------------------------
+--------------------------------------------------------------------------------
 
 ### summary()
 ```{r}
