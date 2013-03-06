@@ -1,0 +1,176 @@
+R graphics : base graphics
+--------------------------------------------------------
+
+### Introduction
+
+Uses an incremental approach, where the different elements of a graph can be added and drawn one after the other.
+
+It follows a simple model, where there is no internal representation of the graphics, apart from the actual drawing.
+
+One can draw elements elements one after another but not remove of change elements.
+
+```{r}
+set.seed(1)
+x <- runif(50)
+y <- 2*x + 0.50 + rnorm(length(x))/5
+groups <- ifelse( y<1, 1, 2)
+
+par(las=1)
+plot(x, y, col=c("red", "blue")[groups], pch=c(1, 2)[groups])
+abline(lm(y~x))
+abline(h=1, lty=2)
+rug(x)
+rug(y, side=2)
+text(0, 2, paste("Correlation = ", round(cor(x,y), 2)), pos=4)
+legend(x="topleft", legend=c("Group 1", "Group 2"),
+       fill=c("red", "blue"))
+```
+
+### Different types of plots
+
+```{r}
+y <- rnorm(20)
+plot(y, type="p")
+plot(y, type="l")
+plot(y, type="b")
+plot(y, type="h")
+```
+
+### The plot() function
+
+plot is an S3 function. It can adapt to the object provided if there is a corresponding function.
+
+Example of the plot.lm function generating multiple plots:
+```{r}
+x <- runif(50)
+y <- 2*x + 0.50 + rnorm(length(x))/5
+plot(lm(y~x))
+```
+
+If more than 2 columns are provided, multiple scatterplots are displayed.
+
+```{r}
+x <- runif(50)
+y <- 2*x + 0.50 + rnorm(length(x))/5
+z <- 1.33*x - 0.25 + rnorm(length(x))/6
+plot(data.frame(x,y,z))
+```
+
+### Combining displays
+
+```{r}
+set.seed(1)
+data <- rnorm(100)
+hist(data, main="", xlim=c(-3, 3), probability=TRUE)
+lines(density(data))
+```
+
+
+### Customizing plots
+
+Graphics functions are the R functions with the most parameters...
+
+```{r}
+?barplot
+```
+
+If plots are not displayed, plot() returns textual information about the display. In the case of barplot, it'll be the X central position of the bars. 
+
+```{r}
+data<- runif(10)
+barplot(data)
+axis(side=1, at=barplot(data, plot=FALSE))
+barplot(data, plot=FALSE)
+```
+
+#### cex
+
+Character extension, to increase/decrease text size. Different sub parameters allow to be more precise on what should change exactly.
+
+
+#### col
+
+Colors used to display graph elements. For instance, it can be useful to set the graph's frame color to light gray, so that it's less visible than the points themselves.
+
+
+#### lab
+
+Position of the axis ticks.
+
+
+#### mai/mar and omi/oma
+
+Sets the margins or outer margins around the plot in the c(bottom, left, top, right) format.
+
+
+#### asp
+
+Aspect ratio between X and Y axis.
+
+#### Other par()
+
+- par("usr") get the actual size of a panel
+
+
+### Interactivity
+
+**identify()** allows manual selection of a set of points.
+
+```{r}
+x <- runif(50)
+y <- runif(50)
+plot(x,y)
+manualSelection <- identify(x, y, LETTERS)
+selectedElements <- cbind(x[manualSelection], y[manualSelection])
+selectedElements
+```
+
+
+**locator()** returns position of mouse clicks in the plot's coordinate system.
+
+
+### Accessing the content of a plot
+
+plot objects can be stored in variables. They are effectively returned by the function calls, but as invisible objects (if not used, printed, stored, they are not visible in the workspace).
+```{r}
+x <- runif(50)
+y <- runif(50)
+bp <- boxplot(x,y,names=c("a","b"))
+bp
+```
+
+### High density scatter plots
+
+You can act on the alpha value of colors (transparency), or use smoothScatters.
+
+```{r, warning=FALSE}
+a <- rnorm(10000)
+b <- rnorm(10000)
+oldpar <- par()
+par(mfrow=c(1, 3))
+plot(a, b)
+plot(a, b, col="#0000ff22", pch=16)
+smoothScatter(a, b)
+##Generates warnings (some parameters can't be edited)
+par(oldpar)
+```
+
+
+### Laying out multiple plots
+
+(Those systems are incompatible, use only one at a time.)
+
+#### par(mfrow=c(x,y))
+
+par(mfrow=c(x,y)) or par(mfcol=c(x,y)) fill by row (then columns) or by column (then by row).
+Example the pairs() command.
+
+#### layout()
+
+```{r}
+layout(matrix(c(1, 1, 
+                0, 2), ncol=2))
+```
+Divides the graphical space into regions specified by a matrix. plot.new() switches from one location to another.
+
+#### split.screen()

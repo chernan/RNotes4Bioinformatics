@@ -1,0 +1,6 @@
+R graphics : Lattice
+--------------------------------------------------------
+
+Based on the idea of displaying together multiple graphs depending on same axis, like different sub-groups, wasting as little space as possible (treillis graphics).
+
+Lattice graphics have an internal representation. They are stored as an object, and drawn only when printed.
