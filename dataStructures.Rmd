@@ -4,8 +4,8 @@ R data structures
 Any R object has 2 attributes: mode (type of data: logical, numeric, function, complex, character, raw, list,...) and class (label)
 
 
-R storage mode
---------------
+R storage modes
+-------------------------------------------------------------
 
 Obtained by the typeof() function
 ```{r}
@@ -86,3 +86,66 @@ data$h
 ```
 Always use labels for accessing columns, **full labels** as partial labels imply R checking for all column names.
 
+Factors
+------------------------------------------------------------------------------
+
+Represent categorical variables.
+
+```{r}
+hair <- factor(c("blond", "brown", "red", "blond"))
+hair
+hair[2] <- "blond"
+hair[2] <- "grey"
+hair
+class(hair)
+mode(hair)
+as.numeric(hair)
+```
+They are also more memory-efficient than tables of characters.
+
+
+Difficult to concatenate
+```{r}
+c(hair,hair)
+# Workaround 1
+factor( as.character(hair), as.character(hair))
+# Workaround 2
+unlist(list(hair, hair))
+```
+To add a value: turn factor to character, add element and turn it to factor again.
+
+Use ordered=TRUE for ordered values.
+```{r}
+time <- factor( c(1,2,3,2,2,1), levels=c(1,2,3), labels=c("never", "sometimes", "always"), ordered=TRUE)
+time
+time[2] < time[3]
+"sometimes" < "always"
+```
+
+```{r}
+boxplot(measure~groups)
+summary(aov( measure~groups))
+groups <- as.factor(groups)
+groups
+summary(aov( measure~groups))
+```
+
+By default, data.frame() and read.table() convert all non-numerical values into factors.
+Use stringsAsFactors=FALSE or as.is=TRUE 
+It can also be set in defaults options(stringsAsFactors=FALSE)
+
+
+Other related functions
+------------------------------------------------------
+
+### summary()
+```{r}
+summary(mylist)
+```
+Class:none means that the class is the same as the mode.
+
+### str()
+**Detailed** information (as detailed as possible) about the structure of a model.
+```{r}
+str(mylist)
+```
