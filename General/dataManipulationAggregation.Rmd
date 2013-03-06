@@ -6,22 +6,28 @@ Contingency table
 
 table()
 
+
 "Apply" family
 --------------------------------------------------------------------------------
 
-apply( )
+### apply()
+
 MAR=1 to loop on rows
 MAR=2 to loop on columns
 
 Other specialized function are often more efficient, like rowSums(matrix).
 
-lapply() to apply on the elements of a list
+### lapply() 
+to apply on the elements of a list
 
-sapply() to apply on the elements of a list and simplify the result to a vector if possible.
+### sapply() 
+to apply on the elements of a list and simplify the result to a vector if possible.
 
-tapply(data, factorForGroups, FUN) apply a function FUN on a matrix after aggregating data using a factor. Or one can use split(data[, "height"], data[ ,"sex"])
+### tapply(data, factorForGroups, FUN) 
+apply a function FUN on a matrix after aggregating data using a factor. Or one can use split(data[, "height"], data[ ,"sex"])
 
-aggregate
+
+Aggregate
 --------------------------------------------------------------------------------
 
 aggregate(x, by, FUN) data.frame/**list**/function, works in a similar way to tapply() but:
@@ -36,15 +42,27 @@ aggregate(iris[, 1:4], iris[5], FUN=mean)
 ## instead of iris[,5] which is a vector (as iris$Species)
 ```
 
-merge
+Merge
 --------------------------------------------------------------------------------
 
-merge()
-Better practice is to specify each time by which column you want to merge for x and y.
+### merge()
+Merge two data frames, by column or by row. By default the function finds all common column names and use them all.
+Interesting parameters include :
+'by' (by.x, by.y) to specify common columns to use for the merge
+'all' (all.x, all.x) to specify if all lines should be kept (even the ones without correspondance in the other data frame). 
+```{r}
+x <- data.frame(index=c(2,3,1), fruit=c("orange", "lemon", "grapefruit"))
+y <- data.frame(index=c(3,1,2,1), quantity=c(13, 6, 3, 5))
+merge(x, y)
+```
 
-See also union/intersect/setdiff/setequal
+A good practice is to specify each time by which column you want to merge for x and y.
 
-match(newlist, reflist) a general way for finding common values
+### union/intersect/setdiff/setequal
+
+### match(newlist, reflist) 
+a general way for finding common values
+
 
 Split data according to groups information
 --------------------------------------------------------------------------------
