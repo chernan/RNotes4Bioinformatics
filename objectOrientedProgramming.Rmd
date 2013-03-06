@@ -1,0 +1,87 @@
+Object-Oriented programming in R
+================================================================================
+
+Definitions
+--------------------------------------------
+
+We use it without knowing it, nor worrying about it.
+A bit of vocab : object, class, attribute, method, inheritance, polymorphism.
+
+Two frameworks: S3 ("old-style", widely used in base packages) and S4 ("formal classes", since R 1.7, widely used in Bioconductor).
+
+S3 framework
+------------------------------------------------
+
+Class is a label attached to an object. Every object in R has a class ("numeric", "matrix", "lm", "factor"...).
+
+### Method dispatch
+
+Example of the summary() function. Applied on different objects gives different outputs. Many summary."classname"() defined, for each class.
+
+```{r}
+summary
+methods("summary")
+```
+Non-visible functions can be accessed by getAnywhere("functionname")
+
+```{r}
+summary.loess()
+getAnywhere(summary.loess)
+```
+
+Access all methods of a class.
+```{r}
+methods(class="lm")
+```
+
+
+### Creating an S3 object
+
+Example of the mygsea2 package.
+```{r}
+#Create a list
+z <- list()
+# Label it with the correct class
+class(z) <- "gsea"
+# Create the methods the user of the class/object will need
+print.gsea <- function(object) {}
+# If needed, create a new generic method
+reduce.gsea <- function(object) {}
+reduce <- function(object) UseMethod("reduce")
+```
+
+The user can easily access the attributes directly, modify it... and R will not complain!
+
+
+S4 framework
+--------------------------------------------------------------------------------
+
+Based on the same "method dispatch" idea than S3, but more formal.
+```{r}
+setClass("GSEA",
+         representation( nperms="numeric"  ),
+         contains="genelist",
+         validity=function(object) {
+             
+         })
+gsea <- new("GSEA", nperms=1000)
+```
+Checks are made for the validity of any created object. Properties include a name, representation, inheritance, prototype, validation(), etc. Attributes are stored in slots, similar to the components of a list for a S3 object, but use @ to "enter" the attributes of an object. S3 use print(), S4 use show(). "ANY" is the basic inheritance.
+
+One can choose whichever one wants, but in any case, avoid mixing S3 and S4.
+
+
+### How to access information in an unknown object?
+
+class(object)
+look at documentation
+find if S3 or S4 names(object) or isS4(object)
+look at the methods available for the object
+methods(class="class") or showMethods(class="class")
+look at the attributes using $ or @
+if needed look at a method to see how it handles the attributes (method.class or getMethods("method", "class") )
+
+R5 framework
+--------------------------------------------------------------------------------
+
+Still under development... See ?ReferenceClasses and http://github.com/hadley/devtools/wiki/R5
