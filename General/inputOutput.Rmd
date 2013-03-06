@@ -1,0 +1,34 @@
+Input/output
+================================================================================
+
+Input
+--------------------------------------------------------------------------------
+
+### Read a table
+
+Read a tab-separated file. Always provide stringAs Factors, row.names and header.
+
+```{r, eval=FALSE}
+read.table("file.dat", header=TRUE, row.names=NULL, stringsAsFactors=FALSE)
+```
+
+
+Output
+--------------------------------------------------------------------------------
+
+### Write a table
+
+With the write.table() function. By default it uses tabulation as separator. 
+Row names are also saved. Consequently, the first line has one element less than following lines.
+
+```{r, eval=FALSE}
+dframe <- data.frame(a=c(1, 5, 3), b=c("blue", "red", "green"))
+write.table(dframe, 
+            "dataframe.txt", 
+            append = FALSE, 
+            sep="\t", 
+            row.names = FALSE, 
+            quote = FALSE, 
+            col.names = FALSE)
+```
+
