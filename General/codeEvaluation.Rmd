@@ -6,6 +6,8 @@ Assign and retrieve variables on the fly
 
 ### Assign/Get
 
+The assign() function is the equivalent of the arrow '<-' operator.
+
 ```{r}
 assign("x", mean(runif(10)))
 get("x")
