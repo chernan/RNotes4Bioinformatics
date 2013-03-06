@@ -1,0 +1,57 @@
+Data manipulation/aggregation
+================================================================================
+
+Contingency table
+--------------------------------------------------------------------------------
+
+table()
+
+"Apply" family
+--------------------------------------------------------------------------------
+
+apply( )
+MAR=1 to loop on rows
+MAR=2 to loop on columns
+
+Other specialized function are often more efficient, like rowSums(matrix).
+
+lapply() to apply on the elements of a list
+
+sapply() to apply on the elements of a list and simplify the result to a vector if possible.
+
+tapply(data, factorForGroups, FUN) apply a function FUN on a matrix after aggregating data using a factor. Or one can use split(data[, "height"], data[ ,"sex"])
+
+aggregate
+--------------------------------------------------------------------------------
+
+aggregate(x, by, FUN) data.frame/**list**/function, works in a similar way to tapply() but:
+- works on whole data.frame (multiple columns
+- **only produces scalar summaries**
+
+```{r}
+data(iris)
+head(iris, 3)
+aggregate(iris[, 1:4], iris[5], FUN=mean)
+## Note that iris[5] is a list (as iris["Species"]), 
+## instead of iris[,5] which is a vector (as iris$Species)
+```
+
+merge
+--------------------------------------------------------------------------------
+
+merge()
+Better practice is to specify each time by which column you want to merge for x and y.
+
+See also union/intersect/setdiff/setequal
+
+match(newlist, reflist) a general way for finding common values
+
+Split data according to groups information
+--------------------------------------------------------------------------------
+
+split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.
+
+stack() transforms a matrix with headers (wide format), into one 2-columns data-frame with measurements/labels (long format).
+Correlation need wide format, modeling need long format.
+
+reshape() has more possibilities, and is consequently more complex.
