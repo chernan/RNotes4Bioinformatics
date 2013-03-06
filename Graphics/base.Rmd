@@ -1,13 +1,13 @@
 R graphics : base graphics
---------------------------------------------------------
+================================================================================
 
-### Introduction
+Introduction
+--------------------------------------------------------------------------------
 
 Uses an incremental approach, where the different elements of a graph can be added and drawn one after the other.
-
+One can draw elements one after another but not remove of change elements.
 It follows a simple model, where there is no internal representation of the graphics, apart from the actual drawing.
 
-One can draw elements elements one after another but not remove of change elements.
 
 ```{r}
 set.seed(1)
@@ -26,6 +26,31 @@ legend(x="topleft", legend=c("Group 1", "Group 2"),
        fill=c("red", "blue"))
 ```
 
+Accessing the content of a plot object
+--------------------------------------------------------------------------------
+
+If plots are not displayed, the plotting function returns textual information about the graph. In the case of barplot, it'll be the X central position of the bars. 
+
+```{r}
+data<- runif(10)
+barplot(data)
+axis(side=1, at=barplot(data, plot=FALSE))
+
+barplot(data, plot=FALSE)
+```
+
+Plot objects can be stored in variables just like any other object. They are effectively returned by the function calls, but as invisible objects (if not used, printed, stored, they are not visible in the workspace).
+```{r}
+x <- runif(50)
+y <- runif(50)
+bp <- boxplot(x,y,names=c("a","b"))
+bp
+```
+
+
+The plot() function
+--------------------------------------------------------------------------------
+
 ### Different types of plots
 
 ```{r}
@@ -35,8 +60,6 @@ plot(y, type="l")
 plot(y, type="b")
 plot(y, type="h")
 ```
-
-### The plot() function
 
 plot is an S3 function. It can adapt to the object provided if there is a corresponding function.
 
@@ -56,17 +79,9 @@ z <- 1.33*x - 0.25 + rnorm(length(x))/6
 plot(data.frame(x,y,z))
 ```
 
-### Combining displays
 
-```{r}
-set.seed(1)
-data <- rnorm(100)
-hist(data, main="", xlim=c(-3, 3), probability=TRUE)
-lines(density(data))
-```
-
-
-### Customizing plots
+Customizing plots
+--------------------------------------------------------------------------------
 
 Graphics functions are the R functions with the most parameters...
 
@@ -74,45 +89,70 @@ Graphics functions are the R functions with the most parameters...
 ?barplot
 ```
 
-If plots are not displayed, plot() returns textual information about the display. In the case of barplot, it'll be the X central position of the bars. 
 
-```{r}
-data<- runif(10)
-barplot(data)
-axis(side=1, at=barplot(data, plot=FALSE))
-barplot(data, plot=FALSE)
-```
+### asp
 
-#### cex
+Aspect ratio between X and Y axis.
+
+
+### cex
 
 Character extension, to increase/decrease text size. Different sub parameters allow to be more precise on what should change exactly.
 
 
-#### col
+### col
 
-Colors used to display graph elements. For instance, it can be useful to set the graph's frame color to light gray, so that it's less visible than the points themselves.
+Colors used to display graph elements, black by default. 
+
+```{r}
+a <- rnorm(10000)
+b <- rnorm(10000)
+plot(a, b)
+plot(a, b, pch=16, col="blue")
+```
+
+One can also give a vector of colors.
+```{r}
+a <- rnorm(10000)
+b <- rnorm(10000)
+myColors <- ifelse((a>0 & b>0), "red", "blue")
+myColors[b < -2] <- "green"
+plot(a, b, pch=16, col=myColors)
+```
 
 
-#### lab
+It can be useful to set the graph's frame color to light gray, so that it's less visible than the points themselves.
+
+
+### lab
 
 Position of the axis ticks.
 
 
-#### mai/mar and omi/oma
+### mai/mar and omi/oma
 
 Sets the margins or outer margins around the plot in the c(bottom, left, top, right) format.
 
 
-#### asp
+### pch
 
-Aspect ratio between X and Y axis.
+Character used for each point. By default, an empty circle.
 
-#### Other par()
+```{r}
+a <- rnorm(10000)
+b <- rnorm(10000)
+plot(a, b)
+plot(a, b, pch=16)
+```
+
+
+### Other par()
 
 - par("usr") get the actual size of a panel
 
 
-### Interactivity
+Interactivity
+--------------------------------------------------------------------------------
 
 **identify()** allows manual selection of a set of points.
 
@@ -128,20 +168,11 @@ selectedElements
 
 **locator()** returns position of mouse clicks in the plot's coordinate system.
 
-
-### Accessing the content of a plot
-
-plot objects can be stored in variables. They are effectively returned by the function calls, but as invisible objects (if not used, printed, stored, they are not visible in the workspace).
-```{r}
-x <- runif(50)
-y <- runif(50)
-bp <- boxplot(x,y,names=c("a","b"))
-bp
-```
+See also package Shiny.
 
 ### High density scatter plots
 
-You can act on the alpha value of colors (transparency), or use smoothScatters.
+You can act on the alpha value of colors (transparency), or use smoothScatters().
 
 ```{r, warning=FALSE}
 a <- rnorm(10000)
@@ -156,7 +187,19 @@ par(oldpar)
 ```
 
 
-### Laying out multiple plots
+Combining plots
+--------------------------------------------------------------------------------
+
+### Combining in the same drawing area
+
+```{r}
+set.seed(1)
+data <- rnorm(100)
+hist(data, main="", xlim=c(-3, 3), probability=TRUE)
+lines(density(data))
+```
+
+### Laying out multiple plots side by side
 
 (Those systems are incompatible, use only one at a time.)
 
@@ -174,3 +217,29 @@ layout(matrix(c(1, 1,
 Divides the graphical space into regions specified by a matrix. plot.new() switches from one location to another.
 
 #### split.screen()
+
+
+Exporting plots to files
+--------------------------------------------------------------------------------
+
+jpeg function produces a JPEG file
+png function produces a PNG file
+bmp function produces a bmp file
+pdf function produces a pdf file
+postscript function produces a postscript file
+
+
+### PDF
+
+Create the pdf "device" where the plots will be written. Parameters called 'width' and 'height' controls the available space size.
+```{r, eval=FALSE}
+pdf("filename.pdf")
+```
+Any subsequent call to a graphic function will write also to the pdf.
+
+To effectively write the file content.
+```{r}
+dev.off()
+```
+
+
