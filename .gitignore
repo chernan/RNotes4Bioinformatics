@@ -1,6 +1,10 @@
-# History files
+# RStudio files
 .Rhistory
-# Example code in package build process
-*-Ex.R
 .Rproj.user
 RNotes4Bioinformatics.Rproj
+# Example code in package build process
+*-Ex.R
+# Don't keep "knited" files
+*.md
+!README.md
+*.html
