@@ -1,0 +1,24 @@
+Code evaluation
+================================================================================
+
+Assign and retrieve variables on the fly
+--------------------------------------------------------------------------------
+
+### Assign/Get
+
+```{r}
+assign("x", mean(runif(10)))
+get("x")
+
+patientid <- "10"
+assign(paste("treatment", patientid, sep=""),
+       sample(c("control", "treatment"), 1))
+treatment10
+```
+
+### Eval
+
+```{r}
+eval(parse(text=paste("i <- ","\"lots lots lots\"")))
+i
+```
