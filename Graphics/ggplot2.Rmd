@@ -1,64 +1,64 @@
 R graphics : ggplot2
---------------------------------------------------------
+================================================================================
 
-http://ggplot2.org
+Introduction
+--------------------------------------------------------------------------------
+
 
 ```{r}
 library(ggplot2)
 ```
 
-Improves the base and lattice systems by using a more formal underlying model.
-
-Based on the concept of grammar of graphics, which describes the components that underline statistics graphics.
+A library created and developped by Hadley Wickman, that improves the base and lattice systems by using a more formal underlying model.
+It is based on the concept of grammar of graphics, which describes the components that underline statistics graphics.
 
 Components:
-- **Data** we want to visualize, and **aestetic mappings** between this data and attribute we can perceive
-- **Geoms** (geometric objects) what we see on the plot (point line...)
-- **Stats** (statistical transformation) summarize, count observations, transformation
-- **Scales**: legends, axes, etc. which make it possible to read the data from the graph
-- **Coord**: a coordinate system
-- **Facet**ing: how to break up data into subsets
+- **Data** we want to visualize, and **aestetic mappings** between this data and attribute we can perceive.
+- **Geoms** (geometric objects) what we see on the plot (point line...).
+- **Stats** (statistical transformation) summarize, count observations, transformation.
+- **Scales**: legends, axes, etc. which make it possible to read the data from the graph.
+- **Coord**: a coordinate system.
+- **Facet**ing: how to break up data into subsets.
 
-### Functions
+The official website with code examples and documentation is http://ggplot2.org
+
+Installation
+--------------------------------------------------------------------------------
+
+```{r, eval=FALSE}
+install.packages("ggplot2")
+```
+
+The full source code of ggplot2 is also on GitHub.
+https://github.com/hadley/ggplot2
+
+Functions
+--------------------------------------------------------------------------------
 
 
-#### qplot
+### qplot
 
 The equivalent of the general purpose plot() base function.
 
-```{r, message=FALSE}
-meatdata <- read.table(file="./meatdata.txt")
-summary(meatdata)
-
-#Default
-qplot(year, amount, data=meatdata)
-
-#One graph with points, colors function of meat origin
-qplot(year, amount, data=meatdata, geom="point", colour=meat)
-#One graph with lines, colors function of meat origin
-qplot(year, amount, data=meatdata, geom="line", colour=meat)
-#Multiple line graphs splitted by meat origin
-qplot(year, amount, data=meatdata, geom="line", colour=meat, facets=meat~.)
-
-#Other types of graphs
-qplot(meat, amount, data=meatdata, geom="jitter")
-qplot(meat, amount, data=meatdata, geom="boxplot")
-qplot(meat, amount, data=meatdata, geom=c("boxplot", "jitter"), colour=meat)
-qplot(amount, data=meatdata, geom="histogram", colour=meat, facets=meat~.)
-
-```
-
 When graphs are splitted by "facets", the group order depends on the corresponding factor's order (alphabetical, by default).
 
-
-Other tests on the **Iris** data set.
+Tests on the **Iris** data set.
 
 ```{r, message=FALSE}
 data(iris)
-qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point")
-qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", colour=Species)
-qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", facets=Species~., colour=Species)
-qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom=c("smooth","point"), facets=Species~., colour=Species)
+summary(iris)
 
+#Default
+qplot(x=Sepal.Length, y=Petal.Length, data=iris)
+
+#One graph with points
+qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point")
+#One graph with points, colors function of Species
+qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", colour=Species)
+#Multiple point graphs splitted by Species
+qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", facets=Species~., colour=Species)
+
+#Other types of graphs : combining geoms
+qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom=c("smooth","point"), facets=Species~., colour=Species)
 qplot(x=Species, y=Petal.Length, data=iris, geom=c("boxplot", "jitter"), colour=Species)
 ```
