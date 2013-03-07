@@ -1,0 +1,119 @@
+UniProt
+================================================================================
+
+UniProt is the best protein database for manually curated annotations.
+
+Using biomaRt to retrieve data from UniProt
+--------------------------------------------------------------------------------
+
+**Unfortunately, access through biomaRt to the database seems to be completely unavailable most of the time.**
+
+
+### Installation
+
+```{r, eval=FALSE}
+source("http://bioconductor.org/biocLite.R")
+biocLite("biomaRt")
+library("biomaRt")
+```
+
+```{r, echo=FALSE}
+# suppressPackageStartupMessages(library("biomaRt"))
+library("biomaRt")
+```
+
+### Generalities
+
+One can list available databases for biomaRt.
+```{r}
+uniProt <- useMart(biomart='unimart')
+listDatasets(uniProt)
+```
+
+### Constructing a request
+
+Selecting the UniProt dataset, updating the Mart that was just created.
+```{r}
+uniProt <- useDataset("uniprot", mart=uniProt)
+```
+
+Alternatively, if the dataset is known already, it can be specified during the Mart creation.
+```{r}
+uniProt <- useMart(biomart='unimart', dataset='uniprot')
+```
+
+Available filters and attributes can be accessed through corresponding methods.
+```{r}
+listFilters(uniProt)
+listAttributes(uniProt)
+```
+
+Filters are the building blocks of requests.
+
+<table>
+<tr><th>index</th><th>name</th><th>description</th></tr>
+<tr><td> 1 </td><td> superregnum_name </td><td> Superregnum name</td></tr>
+<tr><td> 2 </td><td> proteome_name </td><td> Complete proteome</td></tr>
+<tr><td> 3 </td><td> accession </td><td> Accession</td></tr>
+<tr><td> 4 </td><td> protein_name </td><td> Protein</td></tr>
+<tr><td> 5 </td><td> length_greate </td><td> Length ></td></tr>
+<tr><td> 6 </td><td> length_smaller </td><td> Length <</td></tr>
+<tr><td> 7 </td><td> protein_evidence </td><td> Protein existence</td></tr>
+<tr><td> 8 </td><td> embl_id </td><td> EMBL IDs</td></tr>
+<tr><td> 9 </td><td> arrayexpress_id </td><td> ArrayExpress IDs</td></tr>
+<tr><td> 10 </td><td> ensembl_id </td><td> Ensembl IDs</td></tr>
+<tr><td> 11 </td><td> pdbsum_id </td><td> PDBSum IDs</td></tr>
+<tr><td> 12 </td><td> intact_id </td><td> IntAct IDs</td></tr>
+<tr><td> 13 </td><td> interpro_id </td><td> InterPro IDs</td></tr>
+<tr><td> 14 </td><td> go_id </td><td> Gene Ontology IDs</td></tr>
+<tr><td> 15 </td><td> gene_name </td><td> Gene name</td></tr>
+<tr><td> 16 </td><td> entry_type </td><td> Entry type</td></tr>
+<tr><td> 17 </td><td> organelle </td><td> organelle</td></tr>
+<tr><td> 18 </td><td> plasmid_f </td><td> Plasmid</td></tr>
+</table>
+
+Attributes are what can be returned by the requests.
+
+<table>
+<tr><th>index</th><th>name</th><th>description</th></tr>
+<tr><td> 1 </td><td> accession </td><td> Accession </td></tr>
+<tr><td> 2 </td><td> name </td><td> Entry name </td></tr>
+<tr><td> 3 </td><td> protein_name </td><td> Protein name </td></tr>
+<tr><td> 4 </td><td> gene_name </td><td> Gene name </td></tr>
+<tr><td> 5 </td><td> organism </td><td> Organism </td></tr>
+<tr><td> 6 </td><td> protein_evidence </td><td> Protein existence </td></tr>
+<tr><td> 7 </td><td> entry_type </td><td> Status </td></tr>
+<tr><td> 8 </td><td> go_id </td><td> GO ID </td></tr>
+<tr><td> 9 </td><td> go_name </td><td> GO name </td></tr>
+<tr><td> 10 </td><td> db2go_p__dm_primary_id </td><td> GO ID(p) </td></tr>
+<tr><td> 11 </td><td> db2go_p__dm_description </td><td> GO name </td></tr>
+<tr><td> 12 </td><td> db2go_f__dm_description </td><td> GO name (F) </td></tr>
+<tr><td> 13 </td><td> db2go_f__dm_primary_id </td><td> GO ID (F) </td></tr>
+<tr><td> 14 </td><td> db2go_c__dm_primary_id </td><td> GO ID (C) </td></tr>
+<tr><td> 15 </td><td> db2go_c__dm_description </td><td> GO name (C) </td></tr>
+<tr><td> 16 </td><td> embl_id </td><td> EMBL IDs </td></tr>
+<tr><td> 17 </td><td> ensembl_id </td><td> Ensembl IDs </td></tr>
+<tr><td> 18 </td><td> interpro_id </td><td> InterPro IDs </td></tr>
+<tr><td> 19 </td><td> pdbsum_id </td><td> PDBSum IDs </td></tr>
+<tr><td> 20 </td><td> pdb_id </td><td> PDB IDs </td></tr>
+<tr><td> 21 </td><td> arrayexpress </td><td> ArrayExpress IDs </td></tr>
+<tr><td> 22 </td><td> pride_id </td><td> PRIDE IDs </td></tr>
+<tr><td> 23 </td><td> interact_id </td><td> IntAct IDs </td></tr>
+<tr><td> 24 </td><td> comments </td><td> Comments </td></tr>
+<tr><td> 25 </td><td> ec_number </td><td> Ec number </td></tr>
+<tr><td> 26 </td><td> keyword </td><td> Keyword </td></tr>
+<tr><td> 27 </td><td> plasmid_name </td><td> Plasmid name </td></tr>
+<tr><td> 28 </td><td> organelle_name </td><td> organelle name </td></tr>
+</table>
+
+### Examples
+
+From a UniProt AC, request the Protein name (ID) and Gene Ontology IDs and names.
+
+```{r}
+uniProt <- useMart(biomart='unimart', dataset='uniprot')
+getBM(attributes=c("name", "go_id", "go_name"), 
+                        values="E9HCD7", 
+                        filter="accession", mart=uniProt)
+```
+
