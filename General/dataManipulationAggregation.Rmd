@@ -69,6 +69,10 @@ Split data according to groups information
 
 split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.
 
+
+From wide to long format
+--------------------------------------------------------------------------------
+
 stack() transforms a matrix with headers (wide format), into one 2-columns data-frame with measurements/labels (long format).
 Correlation need wide format, modeling need long format.
 

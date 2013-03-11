@@ -1,0 +1,36 @@
+Ggplot2: how to...
+================================================================================
+
+
+How to draw a multi-density plot from a data frame or a list
+--------------------------------------------------------------------------------
+
+Before, we create a sample data set for our test. In this case we use a list, but a data frame could also be used in the case where all elements have the same length (just replace list() by data.frame()). 
+```{r}
+testDF <- list(
+    mean0 = rnorm(1000),
+    mean1 = rnorm(1200, mean=1)
+)
+```
+
+First step is to transform this wide format into long format. The resulting data frame will have two columns titled "values" (with the data) and "ind" (with labels corresponding to column names).
+```{r}
+longDF <- stack(testDF)
+```
+
+And then we plot the densities. Library ggplot2 is loaded, and we use the qplot() function, specifying that "values" column contains the x coordinates (all data being in longDF), that we want the density to be displayed, and that values should be split according to the categories in "ind".
+```{r}
+library("ggplot2")
+qplot(x=values, data=longDF, geom="density", colour=ind)
+```
+
+One-block code:
+```{r, eval=FALSE}
+testDF <- list(
+    mean0 = rnorm(1000),
+    mean1 = rnorm(1200, mean=1)
+)
+longDF <- stack(testDF)
+library("ggplot2")
+qplot(x=values, data=longDF, geom="density", colour=ind)
+```

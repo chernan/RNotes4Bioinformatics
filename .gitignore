@@ -8,3 +8,4 @@ RNotes4Bioinformatics.Rproj
 *.md
 !README.md
 *.html
+figure/
