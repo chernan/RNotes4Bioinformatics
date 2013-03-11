@@ -57,6 +57,8 @@ qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point")
 qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", colour=Species)
 #Multiple point graphs splitted by Species
 qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom="point", facets=Species~., colour=Species)
+#Densities splitted by Species
+qplot(x=Sepal.Length, data=iris, geom="density", colour=Species)
 
 #Other types of graphs : combining geoms
 qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom=c("smooth","point"), facets=Species~., colour=Species)
