@@ -1,4 +1,5 @@
 # RStudio files
+.RData
 .Rhistory
 .Rproj.user
 RNotes4Bioinformatics.Rproj
