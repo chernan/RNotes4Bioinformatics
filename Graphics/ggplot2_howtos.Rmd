@@ -1,6 +1,11 @@
 Ggplot2: how to...
 ================================================================================
 
+> How to draw a multi-density plot from a data frame or a list
+> 
+> How to draw a scatterplot and assign color as a function of another variable
+
+--------------------------------------------------------------------------------
 
 How to draw a multi-density plot from a data frame or a list
 --------------------------------------------------------------------------------
@@ -34,3 +39,69 @@ longDF <- stack(testDF)
 library("ggplot2")
 qplot(x=values, data=longDF, geom="density", colour=ind)
 ```
+
+
+--------------------------------------------------------------------------------
+
+
+How to draw a scatterplot and assign color as a function of another variable
+--------------------------------------------------------------------------------
+
+
+Dataset: we use the 'iris' data set. We want to plot petal length versus width, like this graph :
+```{r}
+data(iris)
+qplot(x=Petal.Length, y=Petal.Width, data=iris)
+```
+and color the points depending on the petal area (approximated as length*width).
+```{r}
+petalArea <- iris$Petal.Length * iris$Petal.Width
+```
+
+### Continuous values, or a large set of discrete values 
+
+For continuous values, use the cut() function to define intervals and create a factor.
+```{r}
+cutPetalArea <- cut(petalArea,
+                    breaks=c(min(petalArea), mean(petalArea), max(petalArea)),
+                    include.lowest=T)
+```
+
+Then use this factor for the 'colour' parameter.
+```{r}
+p <- ggplot(data=iris, 
+            aes(x=Petal.Length, 
+                y=Petal.Width, 
+                colour=cutPetalArea)) + geom_point()
+p
+```
+
+Or simply:
+
+```{r}
+qplot(x=Petal.Length, y=Petal.Width, data=iris, colour=cutPetalArea)
+```
+
+### Discrete values, small finite set
+
+```{r}
+## We artificially round all values to create a finite set of integers...
+roundedPetalArea <- round(petalArea, digits=0)
+```
+
+For a small finite set of discrete values, we can directly create a factor from the different values. 
+
+```{r}
+p <- ggplot(data=iris, 
+            aes(x=Petal.Length, 
+                y=Petal.Width, 
+                colour=factor(roundedPetalArea))) + geom_point()
+p
+```
+
+Or simply:
+
+```{r}
+qplot(x=Petal.Length, y=Petal.Width, data=iris, colour=factor(roundedPetalArea))
+```
+
