@@ -4,6 +4,10 @@ Ggplot2: how to...
 > How to draw a multi-density plot from a data frame or a list
 > 
 > How to draw a scatterplot and assign color as a function of another variable
+> 
+> How to draw a regression line on a scatterplot
+> 
+> How to draw horizontal and vertical lines on a scatterplot
 
 --------------------------------------------------------------------------------
 
@@ -50,6 +54,7 @@ How to draw a scatterplot and assign color as a function of another variable
 
 Dataset: we use the 'iris' data set. We want to plot petal length versus width, like this graph :
 ```{r}
+library("ggplot2")
 data(iris)
 qplot(x=Petal.Length, y=Petal.Width, data=iris)
 ```
@@ -105,3 +110,104 @@ Or simply:
 qplot(x=Petal.Length, y=Petal.Width, data=iris, colour=factor(roundedPetalArea))
 ```
 
+
+--------------------------------------------------------------------------------
+
+How to draw a regression line on a scatterplot
+--------------------------------------------------------------------------------
+
+Dataset: we use the 'iris' data set. We want to plot petal length versus width, like this graph :
+```{r}
+library("ggplot2")
+data(iris)
+qplot(x=Petal.Length, y=Petal.Width, data=iris)
+```
+and add a regression line on the plot.
+
+First step is to construct the linear model that will provide the equation coefficients to be displayed.
+```{r}
+model <- lm(iris$Petal.Width~iris$Petal.Length)
+model
+```
+The first coefficient is the intercept of the equation and the second one, the slope.
+
+We can also add the Rsquared value:
+```{r}
+rSquared <- summary(model)$r.squared
+```
+
+Then we format those values in a character string.
+```{r}
+intercept <- coef(model)[1]
+slope <- coef(model)[2]
+
+eq <- paste0('y = ', 
+             format(intercept, digits=2), 
+             ifelse((slope >= 0), ' + ', ' - '), 
+             format(abs(slope), digits=3), 
+             ' . x')    
+r2val <- paste0('r2 = ', format(rSquared, digits=3) )
+```
+
+Finally, we plot the scatterplot. As we must write the texts at the desired place, instead of using qplot, we use advanced functions, describing layers one after another.
+```{r}
+p <- ggplot(data=iris, 
+            aes(x=Petal.Length, y=Petal.Width)) + 
+    geom_point() + 
+    geom_smooth(method=lm, formula=y~x, se=FALSE, color="blue") +
+    annotate("text", x=4, y=0.3+0.1, hjust=0, vjust=0, label=eq) + 
+    annotate("text", x=4, y=0.3-0.1, hjust=0, vjust=1, label=r2val) 
+p
+```
+
+One-block code:
+
+```{r, eval=FALSE}
+library("ggplot2")
+data(iris)
+model <- lm(iris$Petal.Width~iris$Petal.Length)
+rSquared <- summary(model)$r.squared
+intercept <- coef(model)[1]
+slope <- coef(model)[2]
+
+eq <- paste0('y = ', 
+             format(intercept, digits=2), 
+             ifelse((slope >= 0), ' + ', ' - '), 
+             format(abs(slope), digits=3), 
+             ' . x')    
+r2val <- paste0('r2 = ', format(rSquared, digits=3) )
+
+p <- ggplot(data=iris, 
+            aes(x=Petal.Length, y=Petal.Width)) + 
+    geom_point() + 
+    geom_smooth(method=lm, formula=y~x, se=FALSE, color="blue") +
+    annotate("text", x=4, y=0.3+0.1, hjust=0, vjust=0, label=eq) + 
+    annotate("text", x=4, y=0.3-0.1, hjust=0, vjust=1, label=r2val) 
+p
+```
+
+--------------------------------------------------------------------------------
+
+How to draw horizontal and vertical lines on a scatterplot
+--------------------------------------------------------------------------------
+
+Dataset: we use the 'iris' data set. We want to plot petal length versus width, like this graph :
+```{r}
+library("ggplot2")
+data(iris)
+qplot(x=Petal.Length, y=Petal.Width, data=iris)
+```
+and draw two horizontal and vertical lines on the plot.
+
+This can be done with the geom_ hline() and geom_vline() functions.
+```{r}
+p <- ggplot(data=iris, 
+            aes(x=Petal.Length, y=Petal.Width)) + 
+        geom_point() + 
+        geom_hline(yintercept=mean(iris$Petal.Width), colour="grey") + 
+        geom_vline(xintercept=mean(iris$Petal.Length), colour="grey")
+p
+```
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
