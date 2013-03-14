@@ -1,4 +1,4 @@
-Code evaluation
+Expression evaluation
 ================================================================================
 
 Assign and retrieve variables on the fly
