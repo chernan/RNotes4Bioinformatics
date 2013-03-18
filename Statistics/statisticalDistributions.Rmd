@@ -1,0 +1,155 @@
+Statistical distributions
+========================================================
+
+A list of discrete and continuous distributions.
+
+```{r}
+set.seed(1)
+```
+
+--------------------------------------------------------------------------------
+
+Discrete data
+--------------------------------------------------------------------------------
+
+### Binomial distribution
+
+Describes multiple observations of a variable having only two possible outcomes.
+
+Example: tossing a coin (2 sides) 10 times. How many Head can we expect?
+
+Two parameters: 
+- n number of observations
+- p the probability of one of the outcomes
+
+```{r}
+## distribution with n=10, p=0.5
+n <- 10
+p <- 0.5
+barplot(dbinom(x=0:n, size=n, prob=p), 
+        names.arg=0:10, 
+        col="blue")
+```
+
+- mean E[X] = n*p 
+- variance VAR[X] = n * p * (1-p)
+
+To get a set of values following this law.
+```{r}
+## Get 10 values
+rbinom(n=10, size=10, prob=0.5)
+## Distribution of 10000 values
+hist(rbinom(n=1000, size=10, prob=0.5), breaks=0:10)
+```
+
+
+
+--------------------------------------------------------------------------------
+
+Continuous data
+--------------------------------------------------------------------------------
+
+For continuous data, as we can't get individual probabilities, we have to get a probability for a range of values.
+
+```{r}
+datasets <- data.frame(
+    Uniform=dunif(x=seq(-5, 5, length=200), min=-4, max=4),
+    Normal=dnorm(x=seq(-5, 5, length=200), mean=0, sd=1),
+    Cauchy=dcauchy(x=seq(-5, 5, length=200), location=0, scale=1)
+)
+library("ggplot2")
+qplot(data=stack(datasets), 
+      x=rep(seq(-5, 5, length=200), 3), 
+      y=values, 
+      col=ind, geom="line", facets=~ind)
+
+```
+
+
+### Uniform distribution
+
+Describes the case where all outcomes are equally likely.
+
+Example: pick a value between 1 and 100.
+
+Parameters are the minimal and maximal boundaries.
+
+```{r}
+## distribution between 1 and 5
+minBound <- 1
+maxBound <- 5
+plot(dunif(x=seq(0, 6, length=200), 
+           min=minBound, max=maxBound), 
+     type="l", col="blue")
+```
+
+To get a set of values following this law.
+```{r}
+## Get 10 values
+runif(n=10, min=minBound, max=maxBound)
+## Distribution of 10000 values
+hist(runif(n=10000, min=minBound, max=maxBound), breaks=100)
+```
+
+
+
+### Normal distribution
+
+Outcomes are centered on a mean value, with a certain spread, giving it a bell shape.
+
+Example: weight of a human population
+
+Two parameters:
+- mu, the mean value
+- sigma, the spread
+When mu is 0 and sigma is 1, the distribution is said to be 'standard'.
+
+```{r}
+mu <- 0
+sigma <- 1
+plot(dnorm(x=seq(-5, 5, length=200), 
+           mean=mu, sd=sigma), 
+     type="l", col="blue")
+```
+
+To get a set of values following this law.
+```{r}
+## Get 10 values
+rnorm(n=10, mean=mu, sd=sigma)
+## Distribution of 10000 values
+hist(rnorm(n=10000, mean=mu, sd=sigma), breaks=100)
+```
+
+
+### Cauchy distribution
+
+Outcomes are centered on a value, with a certain spread, but outcomes are less likely to get far from the mean in comparison with a normal distribution. This is "the distribution of a random variable that is the ratio of two independent standard normal random variables" (Wikipedia, 18/03/2013)
+
+Example: differentially expressed proteins.
+
+Two parameters:
+- location, the center value
+- scale, a measure of the spread
+
+NB: mean and variance are not defined.
+
+```{r}
+location <- 0
+scale <- 1
+plot(dcauchy(x=seq(-5, 5, length=200), 
+           location=location, scale=scale), 
+     type="l", col="blue")
+```
+
+To get a set of values following this law.
+```{r}
+## Get 10 values
+rnorm(n=10, mean=mu, sd=sigma)
+## Distribution of 10000 values
+hist(rnorm(n=10000, mean=mu, sd=sigma), breaks=100)
+```
+
+
+--------------------------------------------------------------------------------
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
