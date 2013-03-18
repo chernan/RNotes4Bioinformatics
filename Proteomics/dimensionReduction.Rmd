@@ -1,0 +1,170 @@
+Dimension reduction
+========================================================
+
+Dimension reduction is a way to find patterns inside data. Usually two methods are most known, Singular Value Decomposition and Principal Components analysis, arriving to the same results. 
+The aim is to find a set of uncorrelated variables that can explain as much of the observed variance as possible.
+
+From another point of view, original data can be explained by another matrix made up of fewer variables, with more or less loss of details. This technique is common in image manipulation, especially in image compression. 
+
+
+Singular Value Decomposition (SVD)
+--------------------------------------------------------------------------------
+
+
+```{r}
+##For this paragraph we will use the volcano data, from topographic information on Auckland's Maunga Whau Volcano.
+data(volcano)
+image(volcano)
+```
+
+SVD can be easily run with the svd() function.
+NB: As it cannot be performed when missing values are present, it may be interesting to perform data imputation beforehand.
+
+```{r}
+svdVolcanoImg <- svd(volcano)
+```
+
+The function outputs three elements, a vector d, and two matrices u and v.
+- d contains the singular values ordered by decreasing size
+- u and v can be combined with d to re-create the original input matrix. u has the same number of columns as the original data, and v has the same number of columns as the number of rows in the original data.
+
+```{r}
+dVector <-  svdVolcanoImg$d
+uMatrix <- svdVolcanoImg$u
+vMatrix <- svdVolcanoImg$v
+```
+
+From these values, one can plot the percentage of explained variance through each of the singular values.
+
+```{r}
+percentVarianceExplained <- dVector^2/sum(dVector^2)
+plot(percentVarianceExplained)
+```
+
+A reconstruction of the original input matrix.
+```{r}
+reconstructedImg <- uMatrix %*% diag(dVector) %*% t(vMatrix)
+image(reconstructedImg)
+```
+
+A compressed version of the original matrix using the first singular values.
+```{r}
+compressedImg <- as.matrix(uMatrix[,1]) %*% diag(as.matrix(dVector[1])) %*% t(vMatrix[,1])
+image(compressedImg)
+```
+
+A compressed version of the original matrix using the first three singular values.
+
+```{r}
+compressedImg <- uMatrix[,1:3] %*% diag(dVector[1:3]) %*% t(vMatrix[,1:3])
+image(compressedImg)
+```
+
+
+--------------------------------------------------------------------------------
+
+Principal component analysis
+--------------------------------------------------------------------------------
+
+Principal component analysis tries to change the coordinate system of the data (new set of vectors) in order to maximize the variance along each new vector. First component gathers the maximal explained variance. The second is perpendicular to the first and gathers the maximum of the remaining variance. And so on, all vectors being mutually perpendicular.
+As the space of the dataset depends on its number of columns, the new coordinate system will have as many vectors as the number of columns in the dataset.
+
+```{r}
+##For this paragraph we will use the iris data set.
+data(iris)
+## Only numerical values (we don't use Species, only the measurements)
+irisVals <- iris[,1:4]
+```
+
+### princomp()
+
+PCA can be run with the princomp() function from the base package. 
+From the help page (R version 2.15.2 (2012-10-26)):
+> The calculation is done using eigen() on the correlation or covariance 
+> matrix, as determined by cor(). This is done for compatibility with the 
+> S-PLUS result. A preferred method of calculation is to use svd() on x, as 
+> is done in prcomp().
+
+The princomp() function is numerically less stable than prcomp() which is a better alternative. However, its output structure differs somewhat from that for princomp(). 
+
+```{r}
+pcaOutput <- princomp(irisVals, cor=TRUE)
+```
+
+Vizualisation of the explained variance by component using a Scree Plot. As explained, first component get most of the variance.
+```{r}
+screeplot(pcaOutput, type="lines")
+```
+
+Plot of the projections of the data points along the first two principal components. Coordinates are stored in the 'scores' slot of the output object (pcaOutput$scores). 
+
+```{r}
+plot(pcaOutput$scores[, 1:2], pch=16)
+```
+
+Biplot representing both the Respondent (samples, observations) and Questions (characteristics to be observed)
+```{r}
+## Iris data
+## Questions = Sepal.width, Sepal.length, Petal.width, Petal.length
+## Respondents = Flower measurements
+biplot(pcaOutput, cex=0.7, pc.biplot=TRUE)
+```
+
+Miscellaneous information can be accessed with summary().
+
+```{r}
+## Print "Standard deviation", "Proportion of Variance" and "Cumulative Proportion"
+summary(pcaOutput)
+```
+
+
+### prcomp()
+
+From the help page (R version 2.15.2 (2012-10-26)):
+> The calculation is done by a singular value decomposition of the (centered 
+> and possibly scaled) data matrix, not by using eigen on the covariance 
+> matrix. This is generally the preferred method for numerical accuracy.
+
+
+```{r}
+prcOutput <- prcomp(irisVals, cor=TRUE)
+```
+
+"Standard deviation", "Proportion of Variance" and "Cumulative Proportion" can be accessed with summary().
+```{r}
+summary(prcOutput)
+```
+
+Vizualisation of the explained variance by component using a Scree Plot.
+```{r}
+screeplot(prcOutput, type="lines")
+```
+
+Plot of the projections of the data points along the first two principal components. Coordinates are stored in the 'x' slot of the output object (prcOutput$x). 
+```{r}
+plot(prcOutput$x[, 1:2], pch=16)
+```
+
+Biplot representing both the Respondent (samples, observations) and Questions (characteristics to be observed)
+```{r}
+## Iris data
+## Questions = Sepal.width, Sepal.length, Petal.width, Petal.length
+## Respondents = Flower measurements
+biplot(prcOutput, cex=0.7, pc.biplot=TRUE)
+```
+
+
+
+--------------------------------------------------------------------------------
+
+Factor analysis
+--------------------------------------------------------------------------------
+
+Exploratory method. See http://www.statmethods.net/advstats/factor.html
+
+--------------------------------------------------------------------------------
+Alternatives: 
+- Independent component analysis
+- Latent semantic analysis
+
+See also: http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual
