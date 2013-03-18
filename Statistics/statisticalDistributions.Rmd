@@ -3,6 +3,11 @@ Statistical distributions
 
 A list of discrete and continuous distributions.
 
+See [this image](http://pages.stern.nyu.edu/~adamodar/New_Home_Page/StatFile/statdistns_files/image063.jpg) for a list of most common distributions.
+```{r, eval=FALSE}
+url.show("http://pages.stern.nyu.edu/~adamodar/New_Home_Page/StatFile/statdistns_files/image063.jpg")
+```
+
 ```{r}
 set.seed(1)
 ```
