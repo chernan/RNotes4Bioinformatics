@@ -1,10 +1,11 @@
 Dimension reduction
 ========================================================
 
-Dimension reduction is a way to find patterns inside data. Usually two methods are most known, Singular Value Decomposition and Principal Components analysis, arriving to the same results. 
+Dimension reduction is a way to find patterns inside data, when their dimension is too important to be studied directly.
+
 The aim is to find a set of uncorrelated variables that can explain as much of the observed variance as possible.
 
-From another point of view, original data can be explained by another matrix made up of fewer variables, with more or less loss of details. This technique is common in image manipulation, especially in image compression. 
+From another point of view, original data can be equivalent to another matrix made up of fewer variables, with more or less loss of details. This technique is common in image manipulation, especially in image compression. 
 
 
 Singular Value Decomposition (SVD)
@@ -168,3 +169,5 @@ Alternatives:
 - Latent semantic analysis
 
 See also: http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
