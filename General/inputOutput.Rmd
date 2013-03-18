@@ -4,12 +4,31 @@ Input/output
 Input
 --------------------------------------------------------------------------------
 
-### Read a table
+### Read a table from a file
 
-Read a tab-separated file. Always provide stringAs Factors, row.names and header.
+Read a tab-separated file. Always provide stringAsFactors, row.names and header.
 
 ```{r, eval=FALSE}
 read.table("file.dat", header=TRUE, row.names=NULL, stringsAsFactors=FALSE)
+```
+
+
+### Download a file from the Internet
+
+The download.file() function can be used to dowload a file from the Internet. A particular attention should be taken if the protocol is secured (https). Then other methods than the default should be used (wget or curl) or the user will get a "unsupported url scheme" error.
+
+```{r, eval=FALSE}
+download.file("https://www.data.gouv.fr/var/download/6c0c22473a289c426bca9aecb9b6e21c.zip", destfile="~/produitsBiocides2011.csv", method="wget")
+```
+
+### Read lines from a web pages
+
+In order to read a web page directly, one should first open a connexion to the web page giving a URL. Then this connexion is used to read a given number of lines. n=-1L is the default value and means that everything will be read, but one can also provide a specific number of lines.)
+
+```{r}
+url <- url("http://www.google.com/")
+googleMainPage <- readLines(url, n=-1)
+length(googleMainPage)
 ```
 
 
