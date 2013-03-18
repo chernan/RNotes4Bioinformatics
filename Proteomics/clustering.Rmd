@@ -9,8 +9,8 @@ This domain is not specific to proteomics, but is widely applied to proteomics r
 Hierarchical clustering
 --------------------------------------------------------------------------------
 
-Hierarchical clustering is an unsupervised method, in the sense that it doesn't need a priori to know how many groups are in the data. It just creates a tree based on how close each element is from another. 
-A given tree obtained by hierarchival clustering can be subsequently cut in order to obtain the desired number of groups.
+Hierarchical clustering is an unsupervised method, in the sense that it doesn't need a priori to know how many groups are in the data. It just creates a tree based on how close each element is from another. It's an agglomerative approach, as it iteratively puts together the closest elements.
+A given tree obtained by hierarchival clustering can be subsequently cut in order to obtain a desired number of groups.
 
 
 ```{r}
@@ -23,7 +23,8 @@ irisValues <- iris[, c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Wid
 
 ### Computing distances
 
-Before any clustering, meaning before any grouping of the data, one has to compute distances between the elements to be clustered. This is usually achieved by the dist() function.
+Before any clustering, i.e. before any grouping of the data, one has to compute distances between the elements to be clustered. This is usually achieved by the dist() function.
+Default method uses the euclidean distance. For data sets of discrete values, the "manhattan" distance can be used.
 
 ```{r}
 distances <- as.matrix(dist(irisValues, method="euclidean"))
@@ -84,7 +85,6 @@ qplot(data=iris, x=Petal.Length, y=Petal.Width, colour=factor(threeGroups), main
 
 Knowing that a tree also has a height, one can cut the tree according to a desired height, or get all groups corresponding to a set of height.
 
-
 ```{r}
 woodSlices <- cutree(hclustTree, h=1:floor(max(hclustTree$height)))
 ## Display the groups of the first 20 observations.
@@ -96,7 +96,17 @@ woodSlices[1:20, ]
 K-means clustering
 --------------------------------------------------------------------------------
 
-This is a supervised clustering, one has to specify a number of groups before performing the clustering.
+This is a supervised clustering, as one has to specify a number of groups before performing the clustering. It is also called a partitioning approach.
+The method needs 
+
+The algorithm can be described as follow:
+- Assign elements to a given number of clusters
+- Compute centroids of each cluster
+- Re-assign elements to cluster with closest centroid
+- Re-calculate centroids...
+- Comtinue until convergence (no re-assignment)
+
+This method may give a non-stable solution ("did not converge in X iterations"). In that case (and in general) use the 'nstart' parameter for it to get a consensus partitioning from 'nstart' runs, or increase 'iter.max', the number of iterations.
 
 ```{r}
 ## Set clusters number 
@@ -135,17 +145,16 @@ Other methods are available in the 'cluster' package (pam).
 Evidence Accumulation Clustering
 -------------------------------------------------------------------------------- 
 
-An interesting method described here:
-http://things-about-r.tumblr.com/post/43894016034/the-wisdom-of-crowds-clustering-using-evidence
+An interesting method, called Evidence Accumulation Clustering, is described [here](http://things-about-r.tumblr.com/post/43894016034/the-wisdom-of-crowds-clustering-using-evidence). It is based on computing multiple partitions and grouping in the final partitioning elements co-occuring together in the same clusters.
 
-From the results shown here this method looks interesting to find well-individualized groups.
+From the results shown here this method looks interesting but mainly to find well-individualized groups.
 
-More information here:
-http://www.cs.msu.edu/prip/ResearchProjects/cluster_research/papers/AFred_AJain_ICPR2002.pdf
-and there:
-http://web.cse.msu.edu/prip/Files/AFred_AJain_SSPR2002.pdf
+> Fred, A. L., & Jain, A. K. (2002). Data clustering using evidence accumulation. In Pattern Recognition, 2002. Proceedings. 16th International Conference on (Vol. 4, pp. 276-280). IEEE.
+> 
+More information [here](http://www.cs.msu.edu/prip/ResearchProjects/cluster_research/papers/AFred_AJain_ICPR2002.pdf) and [there](http://web.cse.msu.edu/prip/Files/AFred_AJain_SSPR2002.pdf)
 
 
+The following code is provided on the blog (first link).
 
 ```{r}
 createCoAssocMatrix <- function(Iter, rangeK, dataSet) {
@@ -169,7 +178,7 @@ eac <- function(Iter, rangeK, dataset, hcMethod = "single") {
     CoAssocSim <- createCoAssocMatrix(Iter, rangeK, dataset)
 
     # transform from similiarity into distance matrix
-    CoAssocDist <- 1 - CoAssocSim  
+    CoAssocDist <- 1 - CoAssocSim
     hclustM <- hclust(as.dist(CoAssocDist), method = hcMethod)
     # determine the cut
     cutValue <- hclustM$height[which.max(diff(hclustM$height))]  
@@ -177,10 +186,10 @@ eac <- function(Iter, rangeK, dataset, hcMethod = "single") {
 }
 ```
 
+
 ```{r}
 set.seed(1234)
-testClusterMeth <- eac(Iter = 100, rangeK = c(2, 25), 
-    dataset = irisValues, hcMethod = "single")
+testClusterMeth <- eac(Iter = 100, rangeK = c(2, 25), dataset = irisValues, hcMethod = "single")
 table(testClusterMeth)
 
 ```
