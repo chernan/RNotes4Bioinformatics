@@ -8,6 +8,34 @@ See [this image](http://pages.stern.nyu.edu/~adamodar/New_Home_Page/StatFile/sta
 url.show("http://pages.stern.nyu.edu/~adamodar/New_Home_Page/StatFile/statdistns_files/image063.jpg")
 ```
 
+This is basically a decision tree concerning which distribution can be used.
+
+Is the data discrete or continuous?
+
+**Discrete**. Can you estimate outcomes and probabilities?
+- Yes -> _Estimate probability distribution_.
+- No. Is the data symmetric or asymmetric?
+    - **Symmetric**. Are the values clustered around a central value?
+        - Yes -> _Binomial_
+        - No -> _Uniform discrete_
+    - **Asymmetric**. Are the outliers positive or negative?
+        - Only positive -> _Geometric_
+        - More positive -> _Negative binomial_
+        - More negative -> _Hypergeometric_
+
+**Continuous**. Is the data symmetric or asymmetric?
+- **Symmetric**. Are the values clustered around a central value?
+    - No -> _Uniform or Multimodal_
+    - Yes -> How likely are the outliers?
+        - No outliers. Limits on data -> _Triangular_
+        - Very low -> _Normal_
+        - Low -> _Logistic_ _Cauchy_
+- **Asymmetric**. Where do the outliers lie?
+     - Only positive -> _Exponential_
+     - Mostly positive -> _Lognormal, Gamma, Webull_
+     - Mostly negative -> _Minimum Extreme_
+ 
+
 ```{r}
 set.seed(1)
 ```
@@ -149,9 +177,11 @@ plot(dcauchy(x=seq(-5, 5, length=200),
 To get a set of values following this law.
 ```{r}
 ## Get 10 values
-rnorm(n=10, mean=mu, sd=sigma)
-## Distribution of 10000 values
-hist(rnorm(n=10000, mean=mu, sd=sigma), breaks=100)
+rcauchy(n=10, location=0, scale=1)
+## Distribution of 10000 values (careful: strong outliers are generated!)
+dataCauchy <- rcauchy(n=10000, location=0, scale=1)
+dataCauchy <- dataCauchy[which(dataCauchy > -6 & dataCauchy <6)]
+hist(dataCauchy, breaks=100)
 ```
 
 
