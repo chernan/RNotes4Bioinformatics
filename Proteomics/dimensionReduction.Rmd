@@ -248,7 +248,7 @@ From the help page (R version 2.15.2 (2012-10-26)):
 The princomp() function is numerically less stable than prcomp() which is a better alternative. However, its output structure differs somewhat from that for princomp(). 
 
 ```{r}
-pcaOutput <- princomp(irisVals, cor=TRUE)
+pcaOutput <- princomp(scale(irisVals), cor=TRUE)
 ```
 
 Vizualisation of the explained variance by component using a Scree Plot. As explained, first component get most of the variance.
@@ -262,11 +262,25 @@ More precisely, plot of the percentages of variance explained by each component.
 plot(x=(pcaOutput$sdev^2 / sum(pcaOutput$sdev^2)), type="b", ylab="% Variance explained")
 ```
 
-Plot of the projections of the data points along the first two principal components. Coordinates are stored in the 'scores' slot of the output object (pcaOutput$scores). 
+The 'loadings' slot contains the coordinates of each principal component (pcaOutput$loadings).
+
+Coordinates of the projections of the data points along the first two principal components are stored in the 'scores' slot of the output object (pcaOutput$scores). 
 
 ```{r}
 plot(pcaOutput$scores[, c(1,2)], pch=16)
 ```
+
+In one component, score (projection) of a given element (row in original data) is each original value multipled by the values of the 'loadings' for that component.
+
+```{r}
+## Projection of the first row element, on the first component,
+pcaOutput$scores[1,1]
+## Same value recalculated
+scaledIrisVals <- scale(irisVals)
+sum(scaledIrisVals[1,]*pcaOutput$loadings[,1])
+## NB: where does the difference come from?
+```
+
 
 Biplot representing both the Respondent (samples, observations) and Questions (characteristics to be observed)
 
@@ -294,7 +308,7 @@ From the help page (R version 2.15.2 (2012-10-26)):
 
 
 ```{r}
-prcOutput <- prcomp(irisVals, cor=TRUE)
+prcOutput <- prcomp(scale(irisVals), cor=TRUE)
 ```
 
 "Standard deviation", "Proportion of Variance" and "Cumulative Proportion" can be accessed with summary().
@@ -307,10 +321,32 @@ Vizualisation of the explained variance by component using a Scree Plot.
 screeplot(prcOutput, type="lines")
 ```
 
-Plot of the projections of the data points along the first two principal components. Coordinates are stored in the 'x' slot of the output object (prcOutput$x). 
+The 'rotation' slot contains the coordinates of each principal component (loadings).
+
+Coordinates of the projections of the data points on the first two principal components are stored in the 'x' slot of the output object (prcOutput$x).
+
 ```{r}
 plot(prcOutput$x[, 1:2], pch=16)
 ```
+
+In one component, x (score, projection) of a given observation (row in original data) is each original value multipled by the values of the rotation (loadings) for that component.
+
+```{r}
+## Projection of the first row element, on the first component,
+prcOutput$x[1,1]
+## Same value recalculated
+scaledIrisVals <- scale(irisVals)
+sum(scaledIrisVals[1,]*prcOutput$rotation[,1])
+## prcomp() is indeed more stable numerically
+```
+
+Original data can be recomputed from the components.
+
+```{r}
+reconstructedScaledIrisData <- prcOutput$x %*% t(prcOutput$rotation)
+sum(scale(irisVals) - reconstructedScaledIrisData)
+```
+
 
 Biplot representing both the Respondent (samples, observations) and Questions (characteristics to be observed)
 ```{r}
