@@ -256,18 +256,25 @@ Vizualisation of the explained variance by component using a Scree Plot. As expl
 screeplot(pcaOutput, type="lines")
 ```
 
+More precisely, plot of the percentages of variance explained by each component.
+
+```{r}
+plot(x=(pcaOutput$sdev^2 / sum(pcaOutput$sdev^2)), type="b", ylab="% Variance explained")
+```
+
 Plot of the projections of the data points along the first two principal components. Coordinates are stored in the 'scores' slot of the output object (pcaOutput$scores). 
 
 ```{r}
-plot(pcaOutput$scores[, c(1,3)], pch=16)
+plot(pcaOutput$scores[, c(1,2)], pch=16)
 ```
 
 Biplot representing both the Respondent (samples, observations) and Questions (characteristics to be observed)
+
 ```{r}
 ## Iris data
 ## Questions = Sepal.width, Sepal.length, Petal.width, Petal.length
 ## Respondents = Flower measurements
-biplot(pcaOutput, cex=0.7, pc.biplot=TRUE, choices=c(1,3))
+biplot(pcaOutput, cex=0.7, pc.biplot=TRUE, choices=c(1,2))
 ```
 
 Miscellaneous information can be accessed with summary().
