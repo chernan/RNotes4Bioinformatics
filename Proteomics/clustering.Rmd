@@ -51,10 +51,31 @@ plot(hclustTree)
 Alternatively, the object of class "hclust" returned by a call to hclust() can be turned into a dendrogram. Plotting dendrograms offer more possibilities and accessible parameters.
 
 ```{r}
+## Changing the orientation of the dendrogram, and the size of the labels
 dendrogram1 <- as.dendrogram(hclustTree)
-plot(dendrogram1, nodePar=list(lab.cex=0.7), horiz = TRUE)
+plot(dendrogram1, nodePar=list(lab.cex=0.7, cex=NA), horiz = TRUE)
 ```
 
+```{r}
+## A more complex example using dendrapply to change leaves color and label size
+## Color is now function of the Species
+colorLabels <- factor(iris$Species)
+
+dendrogramH <- as.dendrogram(hclustTree)
+dendColored <- dendrapply(dendrogramH, FUN=function(n) {
+    if(is.leaf(n)) {
+        att <- attributes(n)
+        attr(n, "nodePar") <- c(
+            att$nodePar,
+            list(lab.col = as.numeric(colorLabels[as.numeric(att$label)]), 
+                 lab.cex=.7, cex=NA)
+            )
+    }
+    return(n)
+})
+plot(dendColored)
+
+```
 
 ### Getting k clusters
 
@@ -118,9 +139,10 @@ algo <- "Hartigan-Wong" # or "Lloyd", "Forgy", "MacQueen"
 
 # Compute clustering
 kmeansClust <- kmeans(irisValues, 
-                            centers=nbClusters4kmeans, 
-                            iter.max=nbMaxIteration, 
-                            algorithm=algo)
+                      centers=nbClusters4kmeans, 
+                      iter.max=nbMaxIteration,
+                      nstart=100,
+                      algorithm=algo)
 kmeansThreeGroups <- kmeansClust$cluster
 ```
 
@@ -145,7 +167,7 @@ Other methods are available in the 'cluster' package (pam).
 Evidence Accumulation Clustering
 -------------------------------------------------------------------------------- 
 
-An interesting method, called Evidence Accumulation Clustering, is described [here](http://things-about-r.tumblr.com/post/43894016034/the-wisdom-of-crowds-clustering-using-evidence). It is based on computing multiple partitions and grouping in the final partitioning elements co-occuring together in the same clusters.
+An interesting method, called Evidence Accumulation Clustering, is described [here](http://things-about-r.tumblr.com/post/43894016034/the-wisdom-of-crowds-clustering-using-evidence). It is based on computing multiple partitions and grouping in the final partitioning elements often co-occuring together in the same clusters.
 
 From the results shown here this method looks interesting but mainly to find well-individualized groups.
 
@@ -186,7 +208,7 @@ eac <- function(Iter, rangeK, dataset, hcMethod = "single") {
 }
 ```
 
-
+We can use the method on the Iris data set.
 ```{r}
 set.seed(1234)
 testClusterMeth <- eac(Iter = 100, rangeK = c(2, 25), dataset = irisValues, hcMethod = "single")
