@@ -1,0 +1,156 @@
+Functional data analysis
+========================================================
+
+Functional data analysis is a way to consider data not as a collection of separated values but as one function describing the whole set of values at once. For instance, this can be useful in the case of time course analysis, or hand writing data.
+
+The function will describe the data with more or less details, described as its level of smoothness/roughness. A good function should not be too smooth, as we would lose information. But it should not be too rough either, as it would include too much noise and make comparisons difficult. 
+
+Usually the function will be a combination of similar functions of the same family, called 'basis'. Multiple basis are available: the Fourier basis (for periodic data), the B-spline basis (for non-periodic data), etc.
+
+
+```{r, warning=FALSE, echo=FALSE}
+# install.packages("fda")
+suppressPackageStartupMessages(library("fda"))
+
+# library(splines)
+```
+
+B-spline basis
+--------------------------------------------------------------------------------
+
+### General presentation
+
+The B-spline basis joins polynomial segments together, the points where segments join being called 'knots'. A system is defined by the **order** of the polynomial segments (order = degree + 1), and the **location** of the knots.
+
+Providing an order (norder) and a set of knots (breaks) defines a set of spline functions (basis). There are as many functions as **order+number of interior knots**. Theoretically, there are as many knots as observation times, but frequently fewer knots are sufficient.
+
+We can then try to use these sets (also called bases) to fit our data. For the next examples, we will try to fit B-spline bases of increasing order (three knots) to a set of five values (corresponding to as many time points).
+
+```{r, fig.height=4, fig.width=4}
+timePoints <- c(0, 5, 10, 15, 20)
+toyDataSet <- c(0, 0.5, 1, 0.5, 0.5)
+knots <- seq(0, max(timePoints), length=3)
+plot(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b")
+```
+
+
+When order is 1, segment degree is 0 (degree=order-1). So, each segment is piecewise constant (step functions), and discontinuous.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Bases definition
+bspline1 <- create.bspline.basis(norder=1, breaks=knots)
+plot(bspline1, main='B-spline bases, order = 1')
+## Fit to the data set
+fit2data1 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline1)
+plot(fit2data1, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
+points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+par(op)
+```
+
+When order is 2, segment degree is 1. Each segment is piecewise linear, and continuous.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Bases definition
+bspline2 <- create.bspline.basis(norder=2, breaks=knots)
+plot(bspline2, main='B-spline bases, order = 2')
+## Fit to the data set
+fit2data2 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline2)
+plot(fit2data2, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
+points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+par(op)
+```
+
+When order is 3, segment degree is 2. Each segment is piecewise quadratic, with continuous derivatives.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Bases definition
+bspline3 <- create.bspline.basis(norder=3, breaks=knots)
+plot(bspline3, main='B-spline bases, order = 3')
+## Fit to the data set
+fit2data3 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline3)
+plot(fit2data3, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
+points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+par(op)
+```
+
+When order is 4, segment degree is 3. Each segment is piecewise cubic, with continuous second derivatives.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Bases definition
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+plot(bspline4, main='B-spline bases, order = 4')
+## Fit to the data set
+fit2data4 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline4)
+plot(fit2data4, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
+points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+par(op)
+```
+
+
+### The medfly dataset
+
+The medfly dataset contains records of number of eggs laid by 50 Mediterranean Fruit Fly (Ceratitis capitata) in each of 25 days. It can be downloaded from [Giles Hooker's web page](http://www.bscb.cornell.edu/~hooker/).
+
+```{r, echo=FALSE}
+# download.file("http://www.bscb.cornell.edu/~hooker/FDA2008/medfly.Rdata", paste0(getwd(), "/medfly.Rdata"))
+load(paste0(getwd(), "/../data/medfly.Rdata"))
+str(medfly)
+
+medflyData <- medfly$eggcount[, "682"]
+timePoints <- 13:38
+knots <- seq(min(timePoints), max(timePoints), length=6)
+```
+
+```{r, echo=FALSE, fig.width=10, fig.height=12}
+layout(matrix(1:4, nrow=2, byrow=TRUE))
+bspline1 <- create.bspline.basis(norder=1, breaks=knots)
+fit2data1 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline1)
+plot(fit2data1, main='Fit of the 1-order bases', ylim=c(-50,150))
+points(x=timePoints, y=medflyData, pch=16, col="blue")
+
+bspline2 <- create.bspline.basis(norder=2, breaks=knots)
+fit2data2 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline2)
+plot(fit2data2, main='Fit of the 2-order bases', ylim=c(-50,150))
+points(x=timePoints, y=medflyData, pch=16, col="blue")
+
+bspline3 <- create.bspline.basis(norder=3, breaks=knots)
+fit2data3 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline3)
+plot(fit2data3, main='Fit of the 3-order bases', ylim=c(-50,150))
+points(x=timePoints, y=medflyData, pch=16, col="blue")
+
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline4)
+plot(fit2data4, main='Fit of the 4-order bases', ylim=c(-50,150))
+points(x=timePoints, y=medflyData, pch=16, col="blue")
+```
+
+### The 'growth' dataset
+
+```{r}
+data(growth)
+```
+
+Simple smoothing using the smooth.basisPar() function.
+
+```{r}
+girlGrowthSm <- smooth.basisPar(argvals=growth$age, y=growth$hgtf, lambda=0.1)
+plot(girlGrowthSm$fd, xlab="age", ylab="height (cm)",
+         main="Girls in Berkeley Growth Study" )
+plot(deriv(girlGrowthSm$fd), xlab="age", ylab="growth rate (cm / year)",
+         main="Girls in Berkeley Growth Study" )
+plot(deriv(girlGrowthSm$fd, 2), xlab="age",
+        ylab="growth acceleration (cm / year^2)",
+        main="Girls in Berkeley Growth Study" )
+```
+
+--------------------------------------------------------------------------------
+
+The Fourier basis
+--------------------------------------------------------------------------------
+
+The Fourier basis is a collection of sine and cosine functions of increasing frequency. The system is defined by one parameter $\omega$, $latex \omega = 2\pi / P$ defining the period $P$ of oscillation of the first sine/cosine pair. Because it relies on sine and cosine functions, it's the best choice for periodic functions, like weather analysis, or signal processing.
+
