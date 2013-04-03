@@ -1,19 +1,42 @@
 Functional data analysis
 ========================================================
 
-Functional data analysis is a way to consider data not as a collection of separated values but as one function describing the whole set of values at once. For instance, this can be useful in the case of time course analysis, or hand writing data.
+Functional data analysis is a way to consider data not as a collection of separated values but as one function describing the whole set of values at once. For instance, this can be useful in the case of time course analysis, electrical measurements, hand writing data...
 
-The function will describe the data with more or less details, described as its level of smoothness/roughness. A good function should not be too smooth, as we would lose information. But it should not be too rough either, as it would include too much noise and make comparisons difficult. 
-
-Usually the function will be a combination of similar functions of the same family, called 'basis'. Multiple basis are available: the Fourier basis (for periodic data), the B-spline basis (for non-periodic data), etc.
-
+Two problems need to be addressed: representing data through basis expansions (to obtain a continuous representation of discrete values), and incorporate smoothing penalties in the fit (to smooth values by penalizing roughness, and obtain a fit with less 'waves'). Then exploratory data analysis can be performed by computing mean of functions, variance, correlation, functional PCA...
 
 ```{r, warning=FALSE, echo=FALSE}
 # install.packages("fda")
 suppressPackageStartupMessages(library("fda"))
-
-# library(splines)
+tempOutputFile <- tempfile()
 ```
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+
+Basis expansion
+--------------------------------------------------------------------------------
+
+
+Usually the function will be a combination of similar functions of the same family, called 'basis'. Multiple basis are available: the Fourier basis (for periodic data), the B-spline basis (for non-periodic data), etc.
+
+List of the create.XXX.basis functions : 
+- create.bspline.basis : B-splines family
+- create.constant.basis : constant values 
+- create.exponential.basis
+- create.fourier.basis : Fourier decomposition
+- create.monomial.basis
+- create.polygonal.basis
+- create.polynomial.basis
+- create.power.basis
+
+
+Observing the derivatives of a function can give us more information about the speed and orientation of changes.
+
+
+--------------------------------------------------------------------------------
 
 B-spline basis
 --------------------------------------------------------------------------------
@@ -24,133 +47,986 @@ The B-spline basis joins polynomial segments together, the points where segments
 
 Providing an order (norder) and a set of knots (breaks) defines a set of spline functions (basis). There are as many functions as **order+number of interior knots**. Theoretically, there are as many knots as observation times, but frequently fewer knots are sufficient.
 
-We can then try to use these sets (also called bases) to fit our data. For the next examples, we will try to fit B-spline bases of increasing order (three knots) to a set of five values (corresponding to as many time points).
+These sets (also called bases) are used to fit our data. For the next examples, we will try to fit B-spline bases of increasing order (three knots) to a set of five values (corresponding to as many time points).
 
 ```{r, fig.height=4, fig.width=4}
+## Time points of observations
 timePoints <- c(0, 5, 10, 15, 20)
+## Observations
 toyDataSet <- c(0, 0.5, 1, 0.5, 0.5)
-knots <- seq(0, max(timePoints), length=3)
-plot(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b")
+## Knots, ranging from smallest to biggest time point (one interior knot)
+knots <- seq(min(timePoints), max(timePoints), length=3)
+## Plot of those data
+plot(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
+abline(v=knots, col="red", lty=3)
 ```
-
 
 When order is 1, segment degree is 0 (degree=order-1). So, each segment is piecewise constant (step functions), and discontinuous.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+NB: you can also provide the number of basis instead of the order.
+
+```{r, echo=FALSE, fig.width=10}
 op <- par(mfrow=c(1,2))
 ## Bases definition
 bspline1 <- create.bspline.basis(norder=1, breaks=knots)
 plot(bspline1, main='B-spline bases, order = 1')
+
 ## Fit to the data set
 fit2data1 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline1)
-plot(fit2data1, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
-points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data1, main='Fit of the bases to the data',
+         ylim=c(min(toyDataSet), max(toyDataSet)), lwd=2)
+)
+points(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
 par(op)
 ```
 
 When order is 2, segment degree is 1. Each segment is piecewise linear, and continuous.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+```{r, echo=FALSE, fig.width=10}
 op <- par(mfrow=c(1,2))
 ## Bases definition
 bspline2 <- create.bspline.basis(norder=2, breaks=knots)
 plot(bspline2, main='B-spline bases, order = 2')
 ## Fit to the data set
 fit2data2 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline2)
-plot(fit2data2, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
-points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data2, main='Fit of the bases to the data', 
+         ylim=c(min(toyDataSet),max(toyDataSet)), lwd=2)
+)
+points(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
 par(op)
 ```
 
 When order is 3, segment degree is 2. Each segment is piecewise quadratic, with continuous derivatives.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+```{r, echo=FALSE, fig.width=10}
 op <- par(mfrow=c(1,2))
 ## Bases definition
 bspline3 <- create.bspline.basis(norder=3, breaks=knots)
 plot(bspline3, main='B-spline bases, order = 3')
 ## Fit to the data set
 fit2data3 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline3)
-plot(fit2data3, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
-points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data3, main='Fit of the bases to the data',
+         ylim=c(min(toyDataSet),max(toyDataSet)), lwd=2)
+)
+points(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
 par(op)
 ```
 
 When order is 4, segment degree is 3. Each segment is piecewise cubic, with continuous second derivatives.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+```{r, echo=FALSE, fig.width=10}
 op <- par(mfrow=c(1,2))
 ## Bases definition
 bspline4 <- create.bspline.basis(norder=4, breaks=knots)
 plot(bspline4, main='B-spline bases, order = 4')
 ## Fit to the data set
 fit2data4 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline4)
-plot(fit2data4, main='Fit of the bases to the data', ylim=c(min(toyDataSet),max(toyDataSet)))
-points(x=timePoints, y=toyDataSet, pch=16, col="blue")
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='Fit of the bases to the data',
+         ylim=c(min(toyDataSet),max(toyDataSet)), lwd=2)
+)
+points(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
+par(op)
+```
+
+Finally, example of using order 4 splines, with as many knots as time points. By increasing the number of knots, we also increase the number of splines. Note that going from 3 to 5 knots didn't change the fit so much.
+
+```{r, echo=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Bases definition
+bspline4 <- create.bspline.basis(norder=4, breaks=timePoints)
+plot(bspline4, main='B-spline bases, order = 4')
+## Fit to the data set
+fit2data4 <- Data2fd(argvals=timePoints, y=toyDataSet, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='Fit of the bases to the data', 
+         ylim=c(min(toyDataSet),max(toyDataSet)), lwd=2)
+)
+points(x=timePoints, y=toyDataSet, pch=16, col="blue", type="b", lty=3)
+par(op)
+```
+
+### Derivatives
+
+Derivatives give us indications on the speed of increase or decrease of a function. An increase is indicated by positive values, and a decrease by negative values.
+
+```{r, echo=FALSE, fig.width=10}
+op <- par(mfrow=c(1,2))
+## Creation of the basis: order 4 B-splines
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+plot(bspline4, main='B-spline bases, order = 4')
+abline(v=knots, col="red", lty=3)
+
+## eval.basis() gives us the values of a basis at each time point
+## here for the first derivative
+derivPoints <- seq(min(timePoints), max(timePoints), by=0.01)
+bvals <- eval.basis(derivPoints, bspline4, 1)
+
+## We can plot thos values as lines to visualize the derivatives
+plot(x=NA,
+     xlim=c(min(timePoints), max(timePoints)), 
+     ylim=c(min(bvals), max(bvals)),
+     xlab='',
+     main="First derivatives of the bases")
+abline(h=0, col="gray")
+lines(derivPoints, bvals[,1], type='l', col=1, lty=1)
+lines(derivPoints, bvals[,2], type='l', col=2, lty=2)
+lines(derivPoints, bvals[,3], type='l', col=3, lty=3)
+lines(derivPoints, bvals[,4], type='l', col=4, lty=1)
+lines(derivPoints, bvals[,5], type='l', col=5, lty=2)
+abline(v=knots, col="red", lty=3)
+
 par(op)
 ```
 
 
-### The medfly dataset
+--------------------------------------------------------------------------------
 
-The medfly dataset contains records of number of eggs laid by 50 Mediterranean Fruit Fly (Ceratitis capitata) in each of 25 days. It can be downloaded from [Giles Hooker's web page](http://www.bscb.cornell.edu/~hooker/).
+Other basis
+--------------------------------------------------------------------------------
+
+### The Constant basis
+
+The simplest basis is the Constant one.
+
+Creating a Constant basis is done with the create.constant.basis() function. It just needs the range of the data to be fit.
+
+```{r}
+cbasis = create.constant.basis(rangeval=c(0, 2))
+capture.output(
+    file=tempOutputFile,
+    plot(cbasis, main='Constant bases (no order)')
+)
+```
+
+### The Fourier basis
+
+The Fourier basis is a collection of sine and cosine functions of increasing frequency. The system is defined by one parameter $\omega$, $latex \omega = 2\pi / P$ defining the period $P$ of oscillation of the first sine/cosine pair. Because it relies on sine and cosine functions, it's the best choice for periodic functions, like weather analysis, or signal processing.
+
+Creating a Fourier basis is done with the create.fourier.basis() function. It needs the range of the data, and the number of functions in the basis (odd).
+
+```{r}
+bfourier4 <- create.fourier.basis(nbasis=5, rangeval=c(0, 1))
+capture.output(
+    file=tempOutputFile,
+    plot(bfourier4, main='Fourier bases, order = 5')
+)
+
+```
+
+
+
+--------------------------------------------------------------------------------
+
+The 'growth' dataset
+--------------------------------------------------------------------------------
+
+This data set contains the heights of 39 boys and 54 girls from Berkeley, from age 1 to 18, and the ages at which they were collected. It is available in the fda package.
+
+```{r}
+data(growth)
+
+growthDataGirl01 <- growth$hgtf[, "girl01"]
+timePoints <- growth$age
+knots <- growth$age
+```
+
+```{r, echo=FALSE, fig.width=10, fig.height=16}
+layout(matrix(1:6, nrow=3, byrow=FALSE))
+
+### Bases fit
+
+## 1-order
+bspline1 <- create.bspline.basis(norder=1, breaks=knots)
+fit2data1 <- Data2fd(argvals=timePoints, y=growthDataGirl01, basisobj=bspline1)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data1, main='Fit of the 1-order bases', ylim=c(0,max(growthDataGirl01)), lwd=2)
+)
+points(x=timePoints, y=growthDataGirl01, pch=16, col="blue", type="b", lty=3)
+
+## 2-order
+bspline2 <- create.bspline.basis(norder=2, breaks=knots)
+fit2data2 <- Data2fd(argvals=timePoints, y=growthDataGirl01, basisobj=bspline2)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data2, main='Fit of the 2-order bases', ylim=c(0,max(growthDataGirl01)), lwd=2)
+)
+points(x=timePoints, y=growthDataGirl01, pch=16, col="blue", type="b", lty=3)
+
+## 3-order
+bspline3 <- create.bspline.basis(norder=3, breaks=knots)
+fit2data3 <- Data2fd(argvals=timePoints, y=growthDataGirl01, basisobj=bspline3)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data3, main='Fit of the 3-order bases', ylim=c(0,max(growthDataGirl01)), lwd=2)
+)
+points(x=timePoints, y=growthDataGirl01, pch=16, col="blue", type="b", lty=3)
+
+
+### Derivatives
+
+## No derivative of a constant
+# plot(deriv(fit2data1), main='Derivative (1-order)')
+plot.new()
+text(0.5,0.5,"No derivative of 1-order.")
+
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data2), main='Derivative (of 2-order)')
+)
+
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data3), main='Derivative (of 3-order)')
+)
+```
+
+We can also visualize the whole dataset at once. A look at 2 derivatives gives us an idea of the general dynamics: high growth ratio in the first few years, followed by another acceleration during teenage years, until stabilization (first derivative reaches 0). 
+
+```{r, echo=FALSE, fig.width=10, fig.height=4}
+growthDataGirls <- growth$hgtf
+timePoints <- growth$age
+knots <- growth$age
+
+layout(matrix(1:3, nrow=1))
+
+## 4-order basis
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=growthDataGirls, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, xlab="age", ylab="height (cm)",
+         main="Girls in Berkeley Growth Study", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(growthDataGirls)))
+)
+
+## First derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4), xlab="age", ylab="growth rate (cm / year)",
+         main="Girls in Berkeley Growth Study", sub='First derivative')
+)
+    
+## Second derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4, 2), xlab="age",
+         ylab="growth acceleration (cm / year^2)",
+         main="Girls in Berkeley Growth Study", sub='Second derivative')
+)
+```
+
+
+--------------------------------------------------------------------------------
+
+The medfly dataset
+--------------------------------------------------------------------------------
+
+The medfly dataset contains records of number of eggs laid by 50 Mediterranean Fruit Fly (Ceratitis capitata) in each of 25 days (from day 13 to 38). It can be downloaded from [Giles Hooker's web page](http://www.bscb.cornell.edu/~hooker/).
+
+Here we choose to display only the fit to the 4-order bases.
 
 ```{r, echo=FALSE}
 # download.file("http://www.bscb.cornell.edu/~hooker/FDA2008/medfly.Rdata", paste0(getwd(), "/medfly.Rdata"))
 load(paste0(getwd(), "/../data/medfly.Rdata"))
-str(medfly)
+# str(medfly)
+```
 
+```{r, echo=FALSE, fig.width=10, fig.height=5}
 medflyData <- medfly$eggcount[, "682"]
 timePoints <- 13:38
-knots <- seq(min(timePoints), max(timePoints), length=6)
-```
+knots <- timePoints
 
-```{r, echo=FALSE, fig.width=10, fig.height=12}
-layout(matrix(1:4, nrow=2, byrow=TRUE))
-bspline1 <- create.bspline.basis(norder=1, breaks=knots)
-fit2data1 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline1)
-plot(fit2data1, main='Fit of the 1-order bases', ylim=c(-50,150))
-points(x=timePoints, y=medflyData, pch=16, col="blue")
+layout(matrix(1:2, nrow=1, byrow=FALSE))
 
-bspline2 <- create.bspline.basis(norder=2, breaks=knots)
-fit2data2 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline2)
-plot(fit2data2, main='Fit of the 2-order bases', ylim=c(-50,150))
-points(x=timePoints, y=medflyData, pch=16, col="blue")
-
-bspline3 <- create.bspline.basis(norder=3, breaks=knots)
-fit2data3 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline3)
-plot(fit2data3, main='Fit of the 3-order bases', ylim=c(-50,150))
-points(x=timePoints, y=medflyData, pch=16, col="blue")
-
+### Bases fit 4-order
 bspline4 <- create.bspline.basis(norder=4, breaks=knots)
 fit2data4 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline4)
-plot(fit2data4, main='Fit of the 4-order bases', ylim=c(-50,150))
-points(x=timePoints, y=medflyData, pch=16, col="blue")
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='Fit of the 4-order bases', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData, pch=16, col="blue", type="b", lty=3)
+
+
+## Derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4), main='Derivative (of 4-order)')
+)
 ```
 
-### The 'growth' dataset
+
+```{r, echo=FALSE, fig.width=10, fig.height=4}
+medflyData <- medfly$eggcount
+timePoints <- 13:38
+knots <- timePoints
+
+layout(matrix(1:3, nrow=1))
+
+## 4-order basis
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+)
+
+## First derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4), xlab="age", ylab="eggs laid rate (nb / day)",
+         main="Mediterranean Fruit Fly", sub='First derivative')
+)
+    
+## Second derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4, 2), xlab="age",
+         ylab="eggs laid acceleration (nb / day^2)",
+         main="Mediterranean Fruit Fly", sub='Second derivative')
+)
+```
+
+With too many knots, it's difficult to feel the global dynamics. We decrease the number of knots from 25 (one per day) to 5.
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+medflyData <- medfly$eggcount[, "682"]
+timePoints <- 13:38
+knots <- seq(min(timePoints), max(timePoints), length=5)
+
+layout(matrix(1:2, nrow=1, byrow=FALSE))
+
+### Bases fit 4-order
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='Fit of the 4-order bases', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData, pch=16, col="blue", type="b", lty=3)
+
+
+## Derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4), main='Derivative (of 4-order)')
+)
+```
+
+We can also visualize the whole dataset at once, and observe the non-stable global decrease in time. 
+
+```{r, echo=FALSE, fig.width=10, fig.height=4}
+medflyData <- medfly$eggcount
+timePoints <- 13:38
+knots <- seq(min(timePoints), max(timePoints), length=5)
+
+layout(matrix(1:3, nrow=1))
+
+## 4-order basis
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+)
+
+## First derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4), xlab="age", ylab="eggs laid rate (nb / day)",
+         main="Mediterranean Fruit Fly", sub='First derivative')
+)
+    
+## Second derivative
+capture.output(
+    file=tempOutputFile,
+    plot(deriv(fit2data4, 2), xlab="age",
+         ylab="eggs laid acceleration (nb / day^2)",
+         main="Mediterranean Fruit Fly", sub='Second derivative')
+)
+```
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Smoothing data
+--------------------------------------------------------------------------------
+
+Functional data analysis aims at describing a set of values by going into more or less details, described as level of smoothness/roughness. A good function should not be too smooth, as too much information would be lost. But it should not be too rough either, as it would include too much noise and make comparison between functions difficult. 
+
+### A simple example
+
+A simple way to smooth a function is, for instance in the case of B-splines, by acting on the number of knots.
+
+```{r, echo=FALSE}
+medflyData682 <- medfly$eggcount[, "682"]
+timePoints <- 13:38
+```
+
+```{r, echo=FALSE, fig.width=8}
+layout(matrix(1:2, nrow=1, byrow=FALSE))
+
+### 25 knots
+bspline4 <- create.bspline.basis(norder=4, breaks=timePoints)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData682, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='25 knots', ylim=c(0,80), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+
+### 11 knots
+knots <- seq(min(timePoints), max(timePoints), length=11)
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- Data2fd(argvals=timePoints, y=medflyData682, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4, main='11 knots', ylim=c(0,80), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+```
+
+### Optimizing lambda, the level of smoothness
+
+Another way to smooth a function is to change the value for lambda, the level of smoothness.
+
+There are different methods to compute an optimal level of smoothness, the most common being GCV. Others include AIC, BIC. Typically, lambda is chosen to minimize the mean GCV.
 
 ```{r}
+knots <- seq(min(timePoints), max(timePoints), length=23)
+bspline4 <- create.bspline.basis(norder=4, knots)
+fdParameters <- fdPar(fdobj=bspline4, Lfdobj=int2Lfd(2))
+
+gcvs <- matrix(c(NA), nrow=14, ncol=2)
+for(level in -4:9) {
+    gcvs[level+5,] <- c(level,
+                        lambda2gcv(log10lambda=level,
+                                   argvals=timePoints, y=medflyData682, 
+                                   fdParobj=fdParameters))
+}
+plot(gcvs, type="b", xlab="log10(lambda)", ylab="Mean GCV")
+```
+
+```{r, echo=FALSE, fig.width=12}
+knots <- seq(min(timePoints), max(timePoints), length=23)
+bspline4 <- create.bspline.basis(norder=4, knots)
+
+layout(matrix(1:4, nrow=1, byrow=FALSE))
+
+smoothMedfly <- smooth.basisPar(argvals=13:38, y=medflyData682, fdobj=bspline4, lambda=10^-4)
+capture.output(
+    file=tempOutputFile,
+    plot(smoothMedfly$fd, main='lambda=10^-4', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+
+
+smoothMedfly <- smooth.basisPar(argvals=13:38, y=medflyData682, fdobj=bspline4, lambda=10^0)
+capture.output(
+    file=tempOutputFile,
+    plot(smoothMedfly$fd, main='lambda=10^0', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+
+
+smoothMedfly <- smooth.basisPar(argvals=13:38, y=medflyData682, fdobj=bspline4, lambda=10^1)
+capture.output(
+    file=tempOutputFile,
+    plot(smoothMedfly$fd, main='lambda=10^1', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+
+
+smoothMedfly <- smooth.basisPar(argvals=13:38, y=medflyData682, fdobj=bspline4, lambda=10^4)
+capture.output(
+    file=tempOutputFile,
+    plot(smoothMedfly$fd, main='lambda=10^4', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+```
+
+### Smoothing functions in 'fda'
+
+#### smooth.basis()
+
+More generally, fda package uses the **smooth.basis()** function to manage the smoothness of a fit of a basis to a set of values. A prerequisite is to build an object of class **fdPar** containing functional parameters of the smoothness. 
+
+A **fdpar** object is a collection of three objects:
+- *fdobj* is the basis to be used to define the functional data
+- *Lfdobj* is a linear differential operator, or a call to int2Lfd() with an order of a derivative as argument
+- *lambda* is used to adjust level of smoothness, see above paragraph
+
+```{r}
+knots <- seq(min(timePoints), max(timePoints), length=23)
+bspline4 <- create.bspline.basis(norder=4, knots)
+fdParameters <- fdPar(fdobj=bspline4, Lfdobj=int2Lfd(2), lambda=0.01)
+
+smoothBasisMedfly <- smooth.basis(argvals=timePoints, y=medflyData682, fdParobj=fdParameters)$fd
+```
+```{r, echo=FALSE}
+capture.output(
+    file=tempOutputFile,
+    plot(smoothBasisMedfly, main='smooth.basis()', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+```
+
+The fda package proposes wrappers to simplify this step.
+
+#### smooth.basisPar()
+
+**smooth.basisPar()** is a wrapper to building the fdPar object and calling smooth.basis(). But it needs an object from which deriving the parameters. This object (fdobj) can be :
+- *NULL* : a new spline basis is created from argvals
+- an *integer* : a new spline basis is created from argvals, with this integer as order
+- a *functional data object* (fd)
+- a *basis* (created with one of create.XXX.basis functions)
+
+If none of the following parameters is provided, the fdPar object is built with :
+- *lambda* = 0, 
+- *Lfdobj* = norder-2
+- *basis* = 4-order B-spline, (nbasis-norder+2) knots ranging from 0 to 1 (range may not correspond to the data to be smoothed)
+
+
+```{r}
+knots <- seq(min(timePoints), max(timePoints), length=23)
+bspline4 <- create.bspline.basis(norder=4, knots)
+smoothBasisParMedfly <- smooth.basisPar(argvals=timePoints, y=medflyData682, fdobj=bspline4)$fd
+```
+```{r, echo=FALSE}
+capture.output(
+    file=tempOutputFile,
+    plot(smoothBasisParMedfly, main='smooth.basisPar()', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+```
+
+#### Data2fd()
+
+**Data2fd()** calls smooth.basisPar(), and returns directly the functional data object. From the documentation : "This function tends to be used in rather simple applications where there is no need to control the roughness of the resulting curve with any great finesse. The roughness is essentially controlled by how many basis functions are used. In more sophisticated applications, it would be better to use the function smooth.basisPar()."
+
+Default values:
+- *lambda* : 3e-08/diff(range(argvals))
+- *basis* : 4-order B-spline, (nbasis-norder+2) knots using range of parameter argvals
+
+Adjustments by providing:
+- a basis of choice (basisobj)
+- lambda
+
+```{r}
+data2fdMedfly <- Data2fd(argvals=timePoints, y=medflyData682)
+```
+```{r, echo=FALSE}
+# knots <- seq(min(timePoints), max(timePoints), length=23)
+# bspline4 <- create.bspline.basis(norder=4, knots)
+# data2fdMedfly <- Data2fd(argvals=timePoints, y=medflyData682, basisobj=bspline4)
+capture.output(
+    file=tempOutputFile,
+    plot(data2fdMedfly, main='Data2fd()', ylim=c(0,100), lwd=2)
+)
+points(x=timePoints, y=medflyData682, pch=16, col="blue", type="b", lty=3)
+```
+
+### Examples 
+
+#### The Medfly dataset
+
+```{r, echo=FALSE}
+smoothMedfly <- smooth.basisPar(argvals=13:38, y=medfly$eggcount, lambda=10)
+capture.output(
+    file=tempOutputFile,
+    plot(smoothMedfly$fd, main='Mediterranean Fruit Fly')
+)
+```
+
+#### The 'growth' dataset
+
+```{r, echo=FALSE}
 data(growth)
+girlGrowthSm <- smooth.basisPar(argvals=growth$age, y=growth$hgtf, lambda=100)
+capture.output(
+    file=tempOutputFile,
+    plot(girlGrowthSm$fd, xlab="age", ylab="height (cm)",
+         main="Girls in Berkeley Growth Study" )
+)
 ```
 
-Simple smoothing using the smooth.basisPar() function.
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Exploratory functional analysis
+--------------------------------------------------------------------------------
+
+### Dataset : a set of curves.
+
+Exploratory functional analysis is done on multiple curves. To store multiple curves, we will need a matrix, each column storing the coefficients of one function. Beside the coefficients, we also need a basis.
+
+```{r, echo=FALSE, fig.width=10}
+## Creation of a basis of 23 B-spline, for a range of values between 0 and 2.3
+rangval <- c(0,2.3)
+nbasis <- 23
+breaks <- seq(0, 2.3, length.out=nbasis-2)
+bsplinebasis <- create.bspline.basis(rangval, nbasis=nbasis, breaks=breaks)
+
+## Creation of 20 random functions
+set.seed(1)
+coefs <- matrix(rnorm(20*nbasis), nrow=nbasis, ncol=20)
+randfd2 <- fd(coef=coefs, basisobj=bsplinebasis)
+
+layout(matrix(1:2, nrow=1))
+## Plot all functions
+capture.output(
+    file=tempOutputFile,
+    plot(randfd2, main="All generated functions"))
+## Plot one function
+capture.output(
+    file=tempOutputFile,
+    plot(randfd2[1], main="First generated function", col=2, ylim=c(-2,2)))
+```
+
+### Basic arithmetics
+
+Once we defined those multiple functions, we can perform basic arithmetics on them.
+
+```{r, echo=FALSE}
+capture.output(
+    file=tempOutputFile,
+    plot(randfd2[1] + randfd2[2], col="black", lwd=3))
+lines(randfd2[1], col="blue", lty=2)
+lines(randfd2[2], col="darkgreen", lty=2)
+legend(x="bottomright", cex=0.6,
+       legend=c("Function 1", "Function 2", "Function (1+2)"),
+       lty=c(2, 2, 1), lwd=c(1, 1, 3),
+       col=c("blue", "darkgreen", "black"))
+```
+
+### Summary functions
+
+We can also compute basic statistics, mean (pointwise) and standard deviation.
+
+```{r, echo=FALSE}
+## Mean
+mfd2 <- mean(randfd2)
+capture.output(
+    file=tempOutputFile,
+    plot(randfd2, main="Mean"))
+lines(mfd2, lwd=3, col="black")
+
+## Standard deviation
+sfd2 <- std.fd(randfd2)
+capture.output(
+    file=tempOutputFile,
+    plot(randfd2, main="Standard deviation"))
+lines(mfd2, lwd=3)
+lines(mfd2+2*sfd2, lwd=2, lty=2)
+lines(mfd2-2*sfd2, lwd=2, lty=2)
+```
+
+NB: std.fd() gives the standard error over the _collection of curves_ not a confidence interval for estimating each curve.
+
+### Functional covariance and correlation
+
+They can be computed with:
+- variance or covariance with var.fd)
+- correlation with cor.fd()
+
+Variance measures the dispersion of a variable. Covariance studies simultaneous variations of variables relatively to their means. 
+Covariance of f is a surface C(s,t) giving the covariance between two functions f(s) and f(t). This is a function of two dimensions. In order to represent it, the fda library defines a 'bifd' (bivariate functional data) object.
+
+A bifd object has two bases; one for s and one for t and this is used to create a bivariate basis with basis functions of the form phi i(s) * psi j(t). These are not used much outside of looking at covariances and do not have the same comprehensive set of functions for them.
+
+#### The 'growth' dataset
+
+```{r, echo=FALSE, fig.width=14, fig.height=6}
+data(growth)
+growthDataGirls <- growth$hgtf[, order(apply(growth$hgtf,2,max))]
+growthDataGirls <- growthDataGirls[,1:39]
+growthDataBoys <- growth$hgtm[, order(apply(growth$hgtm,2,max))]
+growthDataBoys <- growthDataBoys[,1:39]
+timePoints <- growth$age
+knots <- growth$age
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+
+girlsGrowthSm <- Data2fd(argvals=timePoints, y=growthDataGirls, basisobj=bspline4, lambda=0.0001)
+boysGrowthSm <- Data2fd(argvals=timePoints, y=growthDataBoys, basisobj=bspline4, lambda=0.0001)
+mfdGirls <- mean(girlsGrowthSm)
+mfdBoys <- mean(boysGrowthSm)
+sfdGirls <- std.fd(girlsGrowthSm)
+sfdBoys <- std.fd(boysGrowthSm)
+
+layout(matrix(c(1:3), nrow=1))
+capture.output(
+    file=tempOutputFile,
+    plot(girlsGrowthSm, xlab="age", ylab="height (cm)",
+         main="Girls in Berkeley Growth Study", 
+         ylim=c(50,max(growthDataBoys)))
+)
+lines(mfdGirls, lwd=3, col="black")
+lines(mfdGirls+2*sfdGirls, lwd=2, lty=2)
+lines(mfdGirls-2*sfdGirls, lwd=2, lty=2)
+
+capture.output(
+    file=tempOutputFile,
+    plot(boysGrowthSm, xlab="age", ylab="height (cm)",
+         main="Boys in Berkeley Growth Study", 
+         ylim=c(50,max(growthDataBoys)))
+)
+lines(mfdBoys, lwd=3, col="black")
+lines(mfdBoys+2*sfdBoys, lwd=2, lty=2)
+lines(mfdBoys-2*sfdBoys, lwd=2, lty=2)
+
+capture.output(
+    file=tempOutputFile,
+    plot(eval.fd(timePoints, mfdGirls),
+         eval.fd(timePoints, mfdBoys), 
+         main="Mean Girls vs Mean Boys", xlab="Girls", ylab="Boys",
+         type="b"))
+abline(coef=c(0,1))
+```
+
+
+```{r, echo=FALSE, fig.width=4}
+library('lattice')
+col.l <- colorRampPalette(c('green', 'red'))
+## Covariance Girls
+varRandFD12 <- var.fd(girlsGrowthSm)
+varfdavals <- eval.bifd(sevalarg=timePoints, tevalarg=timePoints,
+                        varRandFD12)
+levelplot(row.values=timePoints, column.values=timePoints,
+          x=varfdavals, contour=TRUE, labels=FALSE, col.regions=col.l,
+          main="Variance Girls")
+
+## Covariance Boys
+varRandFD12 <- var.fd(boysGrowthSm)
+varfdavals <- eval.bifd(sevalarg=timePoints, tevalarg=timePoints,
+                        varRandFD12)
+levelplot(row.values=timePoints, column.values=timePoints,
+          x=varfdavals, contour=TRUE, labels=FALSE, col.regions=col.l,
+          main="Variance Boys")
+
+## Cross-covariance Girls-Boys
+varRandFD12 <- var.fd(girlsGrowthSm, boysGrowthSm)
+varfdavals <- eval.bifd(sevalarg=timePoints, tevalarg=timePoints,
+                        varRandFD12)
+levelplot(row.values=timePoints, column.values=timePoints,
+          x=varfdavals, contour=TRUE, labels=FALSE, col.regions=col.l,
+          main="Covariance", xlab="Girls", ylab="Boys")
+
+## Correlation
+corfda <- cor.fd(timePoints, girlsGrowthSm, timePoints, boysGrowthSm)
+levelplot(row.values=timePoints, column.values=timePoints,
+          x=corfda, contour=TRUE, labels=FALSE, col.regions=col.l, 
+          main="Correlation", xlab="Girls", ylab="Boys")
+
+```
+Cross-covariance is not good as values from one girls is not correlated to a boy.
+
+We can also try to compute those values on the 'handwrit' data set containing the recording of a hand writing 20 times the text "fda". This set is bidimensional (20 set of values for the X coordinates, and 20 set of values for the Y coordinates, 1401 time points of recording for both). Dimensions of the corresponding array are (1401, 20, 2).
+
+```{r, echo=FALSE}
+handwArray <- handwrit
+# dim(handwArray)
+timePoints  <- seq(0, 2.3, len=1401)
+rangeTime <- c(0, 2.3)
+namesDimensions <- list('Seconds',NULL,c('X','Y'))
+
+## We create the basis
+knots <- seq(min(timePoints), max(timePoints), length.out=51)
+norder <- 6
+splineBasis <- create.bspline.basis(rangeTime, norder=norder, breaks=knots)
+
+## Then fit the basis to the data by least squares, and get the functional data object
+bifdHanwrit <- smooth.basis(argvals=timePoints, y=handwArray, 
+                           fdParobj=splineBasis, fdnames=namesDimensions)$fd
+
+layout(matrix(c(1,2,3,3),nrow=2, byrow=FALSE))
+capture.output(
+    file=tempOutputFile,
+    plot(bifdHanwrit))
+plot(x=NA, type="l", xlab="X", ylab="Y",
+     xlim=c(min(bifdHanwrit$coefs[, , "X"]), max(bifdHanwrit$coefs[, , "X"])),
+     ylim=c(min(bifdHanwrit$coefs[, , "Y"]), max(bifdHanwrit$coefs[, , "Y"])))
+temp <- vapply(1:20, FUN.VALUE=c(NA), FUN=function(val) {
+    lines(x=bifdHanwrit$coefs[, val, "X"], y=bifdHanwrit$coefs[, val, "Y"], 
+          type="l", xlab="X", ylab="Y", col=val)
+    NA
+    })
+
+## Multiple plots (20) to check the fits
+# plotfit.fd(y=handwArray, argvals=timePoints, fdobj=bifdHanwrit, 
+#            nfine=1001, col=4, lwd=2, cex.pch=0.2)
+
+## We compute the functional variance of this 2*fd object
+bivarHandwrit <- var.fd(bifdHanwrit)
+## Get a subset of the time points (1 every 14)
+subsetTimePoints <- timePoints[14*(0:100)+1]
+## And evaluate the functional variance in this sub-window 
+varfdavals <- eval.bifd(subsetTimePoints, subsetTimePoints, bivarHandwrit)
+# str(varfdavals)
+
+library('lattice')
+col.l <- colorRampPalette(c('green', 'red'))
+## Covariance of the X values
+levelplot(row.values=subsetTimePoints, column.values=subsetTimePoints,
+          x=varfdavals[,,,1], main="Covariance X", 
+          contour=TRUE, labels=FALSE, col.regions=col.l,
+          xlim=c(0,2.3), ylim=c(0, 2.3))
+## Covariance of the Y values.
+levelplot(row.values=subsetTimePoints, column.values=subsetTimePoints,
+          x=varfdavals[,,,2], main="Covariance Y", 
+          contour=TRUE, labels=FALSE, col.regions=col.l,
+          xlim=c(0,2.3), ylim=c(0, 2.3))
+## Cross-covariance between X and Y 
+levelplot(row.values=subsetTimePoints, column.values=subsetTimePoints,
+          x=varfdavals[,,,3], main="Cross-covariance X/Y", 
+          contour=TRUE, labels=FALSE, col.regions=col.l,
+          xlim=c(0,2.3), ylim=c(0, 2.3))
+
+## Correlation
+corfda <- cor.fd(subsetTimePoints, bifdHanwrit[,2], subsetTimePoints, bifdHanwrit[,2])
+levelplot(row.values=subsetTimePoints, column.values=subsetTimePoints,
+          x=corfda, main="Correlation Y vs Y", 
+          contour=TRUE, labels=FALSE, col.regions=col.l,
+          xlim=c(0,2.3), ylim=c(0, 2.3))
+
+corfda <- cor.fd(subsetTimePoints, bifdHanwrit[,1], subsetTimePoints, bifdHanwrit[,2])
+levelplot(row.values=subsetTimePoints, column.values=subsetTimePoints,
+          x=corfda, main="Correlation X vs Y", 
+          contour=TRUE, labels=FALSE, col.regions=col.l,
+          xlim=c(0,2.3), ylim=c(0, 2.3))
+## Here the separation between loops becomes very evident. !?
+```
+
+
+### Functional Principal Component Analysis (fPCA) 
+
+fPCA is done through pca.fd(), with or without preliminary smoothing. 
+
+Output object includes:
+- harmonics : fd objects giving eigen-functions
+- values : eigen values
+- scores : PCA scores
+- proportion of explained variance (varprop)
+
+A plot function has also been developped.
+
+```{r, echo=FALSE}
+# download.file("http://www.bscb.cornell.edu/~hooker/FDA2008/medfly.Rdata", paste0(getwd(), "/medfly.Rdata"))
+load(paste0(getwd(), "/../data/medfly.Rdata"))
+
+medflyData <- medfly$eggcount
+timePoints <- 13:38
+knots <- seq(min(timePoints), max(timePoints), length=5)
+
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+fit2data4 <- smooth.basis(argvals=timePoints, y=medflyData, fdParobj=bspline4)
+
+capture.output(
+    file=tempOutputFile,
+    plot(fit2data4$fd, xlab="time", ylab="Nb of eggs",
+         main="Medfly data" ))
+temppca <- pca.fd(
+    fit2data4$fd, nharm=4,
+    harmfdPar=fdPar(fdobj=bspline4, Lfdobj=int2Lfd(2), lambda=0.01)
+)
+plot(temppca)
+plot(temppca$values)
+```
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Clustering of functional data
+--------------------------------------------------------------------------------
+
+### Unsupervised
 
 ```{r}
-girlGrowthSm <- smooth.basisPar(argvals=growth$age, y=growth$hgtf, lambda=0.1)
-plot(girlGrowthSm$fd, xlab="age", ylab="height (cm)",
-         main="Girls in Berkeley Growth Study" )
-plot(deriv(girlGrowthSm$fd), xlab="age", ylab="growth rate (cm / year)",
-         main="Girls in Berkeley Growth Study" )
-plot(deriv(girlGrowthSm$fd, 2), xlab="age",
-        ylab="growth acceleration (cm / year^2)",
-        main="Girls in Berkeley Growth Study" )
+# install.packages("fda.usc")
+library("fda.usc")
+
+## Construct fd object
+data(growth)
+growthDataGirls <- growth$hgtf[, order(apply(growth$hgtf,2,max))]
+growthDataGirls <- growthDataGirls[,1:39]
+growthDataBoys <- growth$hgtm[, order(apply(growth$hgtm,2,max))]
+growthDataBoys <- growthDataBoys[,1:39]
+growthDataGirlsBoys <- cbind(growthDataGirls, growthDataBoys)
+whichSex <- ifelse(grepl(x=colnames(growthDataGirlsBoys), pattern="girl"), "Girl", "Boy")
+timePoints <- growth$age
+knots <- growth$age
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+girlsBoysGrowthSm <- Data2fd(argvals=timePoints, y=growthDataGirlsBoys, basisobj=bspline4, lambda=0.0001)
+
+fdaObj <- fdata(girlsBoysGrowthSm)
+
+outClust <- kmeans.fd(fdaObj, draw=FALSE, max.iter=10000)
+table(whichSex, outClust$cluster)
 ```
 
+
+### Supervised
+
+```{r}
+# install.packages("curvclust")
+library("curvclust")
+
+# showClass("CClustO")
+# showClass("CClustData")
+# showClass("CClustRes")
+
+## creation of a simulated dataset
+mu1 <- c(rep(0,20), rep(1,20), rep(0,150), rep(-0.5,10), rep(1,60),
+         rep(0.5,50), rep(0,200), rep(-1,80), rep(0,190), rep(-0.5,84),
+         rep(0,80), rep(0.5,30), rep(0,50))
+mu2 <- c(rep(0,20), rep(0.5,40), rep(0,130), rep(-0.5,10), rep(1,45), 
+         rep(0.5,65), rep(0,180), rep(-0.5,121), rep(0,86), rep(-0.5,170),
+         rep(0,50), rep(1,57), rep(0,50))
+
+simdata <- simcurv(mu=cbind(mu1,mu2), prop=c(0.6,0.4), SNR=5, lambda=1,
+                   n=50, eta=2, filter.number=1)
+
+##simdata$CCD : simulated data
+##simdata$CCR : parameters of the simulation
+
+CCD <- simdata$CCD
+
+## dimension reduction
+CCDred <- getUnionCoef(CCD)
+
+## options setting
+CCO <- new("CClustO")
+CCO["nbclust"] <- 2
+
+## computing Functional Clustering Mixed Model
+CCR <- getFCMM(CCDred,CCO)
+summary(CCR)
+
+groups <- apply(CCR["Tau"], 1, which.max)
+```
+
+
+
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-The Fourier basis
+Predictive functional analysis
 --------------------------------------------------------------------------------
 
-The Fourier basis is a collection of sine and cosine functions of increasing frequency. The system is defined by one parameter $\omega$, $latex \omega = 2\pi / P$ defining the period $P$ of oscillation of the first sine/cosine pair. Because it relies on sine and cosine functions, it's the best choice for periodic functions, like weather analysis, or signal processing.
+Functional linear models.
 
