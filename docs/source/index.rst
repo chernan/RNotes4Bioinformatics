@@ -13,16 +13,16 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-
-    General/dataStructures
-    General/dataManipulationAggregation
-    General/stringManipulation
-    General/efficientProgramming
-    General/expressionEvaluation
-    General/inputOutput
-    General/objectOrientedProgramming
-    General/packageConstruction
-    General/workspaceManagement
+   
+   /General/dataStructures
+   /General/dataManipulationAggregation
+   /General/stringManipulation
+   /General/efficientProgramming
+   /General/expressionEvaluation
+   /General/inputOutput
+   /General/objectOrientedProgramming
+   /General/packageConstruction
+   /General/workspaceManagement
 
 
 Indices and tables
