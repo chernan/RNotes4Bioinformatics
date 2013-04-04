@@ -1,60 +1,87 @@
 Input/output
-============
+================================================================================
 
 Input
------
+--------------------------------------------------------------------------------
 
-Read a table from a file
-~~~~~~~~~~~~~~~~~~~~~~~~
+### Read a table from a file
 
-Read a tab-separated file. Always provide stringAsFactors,
-row.names and header.
+Read a tab-separated file. Always provide stringAsFactors, row.names and header.
 
-``r read.table("file.dat", header = TRUE, row.names = NULL, stringsAsFactors = FALSE)``
 
-Download a file from the Internet
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. sourcecode:: r
+    
 
-The download.file() function can be used to dowload a file from the
-Internet. A particular attention should be taken if the protocol is
-secured (https). Then other methods than the default should be used
-(wget or curl) or the user will get a "unsupported url scheme"
-error.
+    read.table("file.dat", header = TRUE, row.names = NULL, stringsAsFactors = FALSE)
 
-``r download.file("https://www.data.gouv.fr/var/download/6c0c22473a289c426bca9aecb9b6e21c.zip",      destfile = "~/produitsBiocides2011.csv", method = "wget")``
 
-Read lines from a web pages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to read a web page directly, one should first open a
-connexion to the web page giving a URL. Then this connexion is used
-to read a given number of lines. n=-1L is the default value and
-means that everything will be read, but one can also provide a
-specific number of lines.)
 
-``r url <- url("http://www.google.com/") googleMainPage <- readLines(url, n = -1)``
+### Download a file from the Internet
 
-``## Warning: ligne finale incomplète trouvée dans 'http://www.google.com/'``
+The download.file() function can be used to dowload a file from the Internet. A particular attention should be taken if the protocol is secured (https). Then other methods than the default should be used (wget or curl) or the user will get a "unsupported url scheme" error.
 
-``r length(googleMainPage)``
 
-``## [1] 17``
+.. sourcecode:: r
+    
 
-``r close(con = url)``
+    download.file("https://www.data.gouv.fr/var/download/6c0c22473a289c426bca9aecb9b6e21c.zip", 
+        destfile = "~/produitsBiocides2011.csv", method = "wget")
+
+
+
+### Read lines from a web pages
+
+In order to read a web page directly, one should first open a connexion to the web page giving a URL. Then this connexion is used to read a given number of lines. n=-1L is the default value and means that everything will be read, but one can also provide a specific number of lines.)
+
+
+.. sourcecode:: r
+    
+
+    url <- url("http://www.google.com/")
+    googleMainPage <- readLines(url, n = -1)
+
+
+::
+
+    ## Warning: ligne finale incomplète trouvée dans 'http://www.google.com/'
+
+
+.. sourcecode:: r
+    
+
+    length(googleMainPage)
+
+
+::
+
+    ## [1] 17
+
+
+.. sourcecode:: r
+    
+
+    close(con = url)
+
+
+
 
 Output
-------
+--------------------------------------------------------------------------------
 
-Write a table
-~~~~~~~~~~~~~
+### Write a table
 
-With the write.table() function. By default it uses tabulation as
-separator. Row names are also saved. Consequently, the first line
-has one element less than following lines.
-
-``r dframe <- data.frame(a = c(1, 5, 3), b = c("blue", "red", "green")) write.table(dframe, "dataframe.txt", append = FALSE, sep = "\t", row.names = FALSE,      quote = FALSE, col.names = FALSE)``
-
-This work by Celine Hernandez is licensed under a Creative Commons
-Attribution-ShareAlike 3.0 Unported License.
+With the write.table() function. By default it uses tabulation as separator. 
+Row names are also saved. Consequently, the first line has one element less than following lines.
 
 
+.. sourcecode:: r
+    
+
+    dframe <- data.frame(a = c(1, 5, 3), b = c("blue", "red", "green"))
+    write.table(dframe, "dataframe.txt", append = FALSE, sep = "\t", row.names = FALSE, 
+        quote = FALSE, col.names = FALSE)
+
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
