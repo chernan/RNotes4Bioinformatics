@@ -11,8 +11,12 @@ Still need to check every example.
 
 Contents:
 
+General
+
+General-purpose documentation.
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    /General/dataStructures
    /General/dataManipulationAggregation
