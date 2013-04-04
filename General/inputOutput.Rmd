@@ -29,6 +29,7 @@ In order to read a web page directly, one should first open a connexion to the w
 url <- url("http://www.google.com/")
 googleMainPage <- readLines(url, n=-1)
 length(googleMainPage)
+close(con=url)
 ```
 
 

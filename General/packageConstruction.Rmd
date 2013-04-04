@@ -7,7 +7,7 @@ Creation
 --------------------------------------------------------------------------------
 
 One can use package.skeleton to create a package from a set of R scripts located in a folder.
-```{r}
+```{r, eval=FALSE}
 all.files <- list.files("myFolder/", recursive=TRUE, full.name=TRUE)
 package.skeleton("PackageName", code_files=all.files, namespace=TRUE, force=TRUE)
 ```
