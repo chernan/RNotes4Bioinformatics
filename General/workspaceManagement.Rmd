@@ -11,9 +11,8 @@ install.packages('knitr')
 
 From outside any R session
 Download from CRAN, by ex. http://cran.r-project.org/web/packages/knitr/index.html
-```{r, eval=FALSE}
-R CMD INSTALL knitr
-```
+
+> R CMD INSTALL knitr
 
 List loaded packages
 --------------------------------------------------------------------------------
