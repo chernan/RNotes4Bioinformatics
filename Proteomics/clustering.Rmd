@@ -262,4 +262,134 @@ Other scores are available in the clusterCrit package.
 
 
 
+--------------------------------------------------------------------------------
+
+Fuzzy clustering (c-means)
+--------------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+suppressPackageStartupMessages(library('Mfuzz'))
+```
+
+
+```{r, echo=FALSE}
+data(yeast)
+
+# summary(exprs(yeast))
+
+## Missing values
+## Filter
+yeast.r <- filter.NA(yeast, thres=0.25)
+## Fill
+yeast.f <- fill.NA(yeast.r, mode="mean")
+
+## Filtering
+tmp <- filter.std(yeast.f,min.std=0)
+
+## Standardization
+yeast.s <- standardise(yeast.f)
+
+## Clustering
+cl <- mfuzz(eset=yeast.s, centers=16, m=1.25)
+mfuzz.plot(yeast.s, cl=cl, mfrow=c(4,4), time.labels=seq(0,160,10))
+```
+
+```{r, echo=FALSE}
+suppressPackageStartupMessages(library(fda))
+data(growth)
+growthDataGirls <- growth$hgtf[, order(apply(growth$hgtf,2,max))]
+growthDataGirls <- growthDataGirls[,1:39]
+growthDataBoys <- growth$hgtm[, order(apply(growth$hgtm,2,max))]
+growthDataBoys <- growthDataBoys[,1:39]
+growthDataGirlsBoys <- t(cbind(growthDataGirls, growthDataBoys))
+whichSex <- ifelse(grepl(x=rownames(growthDataGirlsBoys), pattern="girl"), "Girl", "Boy")
+
+expSet <- new("ExpressionSet", exprs=growthDataGirlsBoys)
+growth.r <- filter.NA(expSet, thres=0.25)
+growth.s <- standardise(growth.r)
+
+cl <- mfuzz(eset=growth.s, centers=2, m=1.25)
+mfuzz.plot(growth.r, cl=cl, mfrow=c(1,2))
+fuzzyClusters <- cl$cluster
+fuzzyClusters[apply(cl$membership,1,max)<0.99] <- 0
+table(whichSex, fuzzyClusters)
+
+```
+
+
+```{r, echo=FALSE}
+load(paste0(getwd(), "/../data/medfly.Rdata"))
+medflyData <- t(medfly$eggcount)
+
+expSet <- new("ExpressionSet", exprs=medflyData)
+medfly.s <- standardise(expSet)
+cl <- mfuzz(eset=medfly.s, centers=10, m=1.25)
+fuzzyClusters <- cl$cluster
+fuzzyClusters[apply(cl$membership,1,max)<0.7] <- 0
+
+
+### Bases fit 4-order
+medflyData <- medfly$eggcount
+timePoints <- 13:38
+knots <- seq(13, 38,length.out=7)
+bspline4 <- create.bspline.basis(norder=4, breaks=knots)
+
+layout(matrix(1:8, nrow=2, byrow=TRUE))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==1]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 1", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==2]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 2", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==3]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 3", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==4]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 4", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==5]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 5", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==6]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 6", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==7]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 7", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+aMedflyCluster <- medflyData[,fuzzyClusters==0]
+fit2data4clust <- Data2fd(argvals=timePoints, y=aMedflyCluster, basisobj=bspline4)
+plot(fit2data4clust, xlab="age", ylab="Nb. of eggs laid",
+         main="Mediterranean Fruit Fly 0", sub='Fit of the 4-order bases', 
+         ylim=c(0,max(medflyData)))
+
+
+mfuzz.plot(expSet, cl=cl, mfrow=c(2,5),min.mem=0.7)
+
+```
+
+
+
+
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
