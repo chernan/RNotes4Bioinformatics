@@ -156,7 +156,7 @@ hist(rnorm(n=10000, mean=mu, sd=sigma), breaks=100)
 
 ### Cauchy distribution
 
-Outcomes are centered on a value, with a certain spread, but outcomes are less likely to get far from the mean in comparison with a normal distribution. This is "the distribution of a random variable that is the ratio of two independent standard normal random variables" (Wikipedia, 18/03/2013)
+Outcomes are centered on a value, with a certain spread, but outcomes are more likely to get very far from the mean in comparison with a normal distribution. This is "the distribution of a random variable that is the ratio of two independent standard normal random variables" (Wikipedia, 18/03/2013)
 
 Example: differentially expressed proteins.
 
@@ -180,8 +180,14 @@ To get a set of values following this law.
 rcauchy(n=10, location=0, scale=1)
 ## Distribution of 10000 values (careful: strong outliers are generated!)
 dataCauchy <- rcauchy(n=10000, location=0, scale=1)
-dataCauchy <- dataCauchy[which(dataCauchy > -6 & dataCauchy <6)]
 hist(dataCauchy, breaks=100)
+rug(dataCauchy)
+```
+
+```{r}
+## Focus only on the ]-6; 6[ interval
+dataCauchyFocus <- dataCauchy[which(dataCauchy > -6 & dataCauchy <6)]
+hist(dataCauchyFocus, breaks=100)
 ```
 
 
