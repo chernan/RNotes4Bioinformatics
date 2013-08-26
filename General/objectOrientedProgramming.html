@@ -2,7 +2,17 @@
 <!-- saved from url=(0014)about:internet -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
 
 <title>Object-Oriented programming in R</title>
 
@@ -179,6 +189,23 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>R Notes For Bioinformatics</h1>
+          <h2>A collection of notes describing a few aspects of R for bioinformatics, and sometimes more specifically, for proteomics.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <section id="main_content">
+
+        <hr>
 <h1>Object-Oriented programming in R</h1>
 
 <h2>Definitions</h2>
@@ -212,18 +239,20 @@ A bit of vocab : object, class, attribute, method, inheritance, polymorphism.</p
 ##  [3] summary.aspell*         summary.connection     
 ##  [5] summary.data.frame      summary.Date           
 ##  [7] summary.default         summary.ecdf*          
-##  [9] summary.factor          summary.glm            
-## [11] summary.infl            summary.lm             
-## [13] summary.loess*          summary.manova         
-## [15] summary.matrix          summary.mlm            
-## [17] summary.nls*            summary.packageStatus* 
-## [19] summary.PDF_Dictionary* summary.PDF_Stream*    
-## [21] summary.POSIXct         summary.POSIXlt        
-## [23] summary.ppr*            summary.prcomp*        
-## [25] summary.princomp*       summary.srcfile        
-## [27] summary.srcref          summary.stepfun        
-## [29] summary.stl*            summary.table          
-## [31] summary.tukeysmooth*   
+##  [9] summary.factor          summary.ggplot*        
+## [11] summary.glm             summary.infl           
+## [13] summary.lm              summary.loess*         
+## [15] summary.loglm*          summary.manova         
+## [17] summary.matrix          summary.mlm            
+## [19] summary.negbin*         summary.nls*           
+## [21] summary.packageStatus*  summary.PDF_Dictionary*
+## [23] summary.PDF_Stream*     summary.polr*          
+## [25] summary.POSIXct         summary.POSIXlt        
+## [27] summary.ppr*            summary.prcomp*        
+## [29] summary.princomp*       summary.rlm*           
+## [31] summary.srcfile         summary.srcref         
+## [33] summary.stepfun         summary.stl*           
+## [35] summary.table           summary.tukeysmooth*   
 ## 
 ##    Non-visible functions are asterisked
 </code></pre>
@@ -264,13 +293,13 @@ A bit of vocab : object, class, attribute, method, inheritance, polymorphism.</p
 ##  [7] deviance.lm*       dfbeta.lm*         dfbetas.lm*       
 ## [10] drop1.lm*          dummy.coef.lm*     effects.lm*       
 ## [13] extractAIC.lm*     family.lm*         formula.lm*       
-## [16] hatvalues.lm       influence.lm*      kappa.lm          
-## [19] labels.lm*         logLik.lm*         model.frame.lm    
-## [22] model.matrix.lm    nobs.lm*           plot.lm           
-## [25] predict.lm         print.lm           proj.lm*          
-## [28] qr.lm*             residuals.lm       rstandard.lm      
-## [31] rstudent.lm        simulate.lm*       summary.lm        
-## [34] variable.names.lm* vcov.lm*          
+## [16] fortify.lm*        hatvalues.lm       influence.lm*     
+## [19] kappa.lm           labels.lm*         logLik.lm*        
+## [22] model.frame.lm     model.matrix.lm    nobs.lm*          
+## [25] plot.lm            predict.lm         print.lm          
+## [28] proj.lm*           qr.lm*             residuals.lm      
+## [31] rstandard.lm       rstudent.lm        simulate.lm*      
+## [34] summary.lm         variable.names.lm* vcov.lm*          
 ## 
 ##    Non-visible functions are asterisked
 </code></pre>
@@ -334,6 +363,14 @@ if needed look at a method to see how it handles the attributes (method.class or
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 
-</body>
+        <footer>
+          Rnotes4bioinformatics is maintained by <a href="https://github.com/chernan">chernan</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+      </div>
+    </div>
+
+  </body>
+
 
 </html>

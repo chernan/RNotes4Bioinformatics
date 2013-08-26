@@ -2,7 +2,17 @@
 <!-- saved from url=(0014)about:internet -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
 
 <title>Workspace management</title>
 
@@ -179,6 +189,23 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>R Notes For Bioinformatics</h1>
+          <h2>A collection of notes describing a few aspects of R for bioinformatics, and sometimes more specifically, for proteomics.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <section id="main_content">
+
+        <hr>
 <h1>Workspace management</h1>
 
 <h2>Installing a package</h2>
@@ -217,11 +244,15 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] markdown_0.5.4 knitr_1.1     
+## [1] ggplot2_0.9.3.1 markdown_0.5.4  knitr_1.1      
 ## 
 ## loaded via a namespace (and not attached):
-## [1] digest_0.6.3   evaluate_0.4.3 formatR_0.7    stringr_0.6.2 
-## [5] tools_2.15.2
+##  [1] colorspace_1.2-1   dichromat_2.0-0    digest_0.6.3      
+##  [4] evaluate_0.4.3     formatR_0.7        grid_2.15.2       
+##  [7] gtable_0.1.2       KernSmooth_2.23-9  labeling_0.1      
+## [10] MASS_7.3-23        munsell_0.4        plyr_1.8          
+## [13] proto_0.3-10       RColorBrewer_1.0-5 reshape2_1.2.2    
+## [16] scales_0.2.3       stringr_0.6.2      tools_2.15.2
 </code></pre>
 
 <p>Get the list of all currently loaded packages, and a few information on them.</p>
@@ -230,6 +261,7 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 </code></pre>
 
 <pre><code>##           Package     LibPath                                         
+## ggplot2   &quot;ggplot2&quot;   &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## markdown  &quot;markdown&quot;  &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## knitr     &quot;knitr&quot;     &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## stats     &quot;stats&quot;     &quot;/usr/lib/R/library&quot;                            
@@ -239,17 +271,19 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 ## datasets  &quot;datasets&quot;  &quot;/usr/lib/R/library&quot;                            
 ## methods   &quot;methods&quot;   &quot;/usr/lib/R/library&quot;                            
 ## base      &quot;base&quot;      &quot;/usr/lib/R/library&quot;                            
-##           Version  Priority Depends        
-## markdown  &quot;0.5.4&quot;  NA       &quot;R (&gt;= 2.11.1)&quot;
-## knitr     &quot;1.1&quot;    NA       &quot;R (&gt;= 2.14.1)&quot;
-## stats     &quot;2.15.2&quot; &quot;base&quot;   NA             
-## graphics  &quot;2.15.2&quot; &quot;base&quot;   NA             
-## grDevices &quot;2.15.2&quot; &quot;base&quot;   NA             
-## utils     &quot;2.15.2&quot; &quot;base&quot;   NA             
-## datasets  &quot;2.15.2&quot; &quot;base&quot;   NA             
-## methods   &quot;2.15.2&quot; &quot;base&quot;   NA             
-## base      &quot;2.15.2&quot; &quot;base&quot;   NA             
+##           Version   Priority Depends                      
+## ggplot2   &quot;0.9.3.1&quot; NA       &quot;R (&gt;= 2.14), stats, methods&quot;
+## markdown  &quot;0.5.4&quot;   NA       &quot;R (&gt;= 2.11.1)&quot;              
+## knitr     &quot;1.1&quot;     NA       &quot;R (&gt;= 2.14.1)&quot;              
+## stats     &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## graphics  &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## grDevices &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## utils     &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## datasets  &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## methods   &quot;2.15.2&quot;  &quot;base&quot;   NA                           
+## base      &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ##           Imports                                                                                       
+## ggplot2   &quot;plyr (&gt;= 1.7.1), digest, grid, gtable (&gt;= 0.1.1), reshape2,\nscales (&gt;= 0.2.3), proto, MASS&quot; 
 ## markdown  NA                                                                                            
 ## knitr     &quot;evaluate (&gt;= 0.4.3), digest, formatR (&gt;= 0.3-4), markdown (&gt;=\n0.4), stringr (&gt;= 0.6), tools&quot;
 ## stats     NA                                                                                            
@@ -260,6 +294,7 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 ## methods   &quot;utils&quot;                                                                                       
 ## base      NA                                                                                            
 ##           LinkingTo
+## ggplot2   NA       
 ## markdown  NA       
 ## knitr     NA       
 ## stats     NA       
@@ -269,17 +304,19 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 ## datasets  NA       
 ## methods   NA       
 ## base      NA       
-##           Suggests                                                                 
-## markdown  &quot;RCurl&quot;                                                                  
-## knitr     &quot;testthat, rgl, codetools, R2SWF (&gt;= 0.4), XML, RCurl, Rcpp\n(&gt;= 0.10.0)&quot;
-## stats     NA                                                                       
-## graphics  NA                                                                       
-## grDevices NA                                                                       
-## utils     NA                                                                       
-## datasets  NA                                                                       
-## methods   NA                                                                       
-## base      NA                                                                       
+##           Suggests                                                                     
+## ggplot2   &quot;quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,\nnlme, testthat&quot;
+## markdown  &quot;RCurl&quot;                                                                      
+## knitr     &quot;testthat, rgl, codetools, R2SWF (&gt;= 0.4), XML, RCurl, Rcpp\n(&gt;= 0.10.0)&quot;    
+## stats     NA                                                                           
+## graphics  NA                                                                           
+## grDevices NA                                                                           
+## utils     NA                                                                           
+## datasets  NA                                                                           
+## methods   NA                                                                           
+## base      NA                                                                           
 ##           Enhances OS_type License            Built   
+## ggplot2   &quot;sp&quot;     NA      &quot;GPL-2&quot;            &quot;2.15.2&quot;
 ## markdown  NA       NA      &quot;GPL-3&quot;            &quot;2.15.2&quot;
 ## knitr     NA       NA      &quot;GPL&quot;              &quot;2.15.2&quot;
 ## stats     NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
@@ -312,6 +349,14 @@ apply(packagesToLoad, 1, FUN = function(aLib) {
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 
-</body>
+        <footer>
+          Rnotes4bioinformatics is maintained by <a href="https://github.com/chernan">chernan</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+      </div>
+    </div>
+
+  </body>
+
 
 </html>
