@@ -10,3 +10,4 @@ RNotes4Bioinformatics.Rproj
 !README.md
 *.html
 figure/
+dist_doc/
