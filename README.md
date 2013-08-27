@@ -1,5 +1,5 @@
-RNotes4Bioinformatics
-=====================
+R Notes for Bioinformatics
+================================================================================
 
 A collection of notes describing a few aspects of R for bioinformatics.
 
