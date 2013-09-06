@@ -1,180 +1,333 @@
 R data structures
 =============================================================
 
-Any R object has 2 attributes: mode (type of data: logical, numeric, function, complex, character, raw, list,...) and class (label)
+1. R variables
+  * Attributes
+2. R storage modes
+  * Logical
+  * Vector
+  * Matrix
+  * List
+  * Data frame (Data access, Subset)
+  * Factor
+3. How to get information of the content/structure of a variable
+  * summary()
+  * str()
 
 
-R storage modes
 --------------------------------------------------------------------------------
 
-Obtained by the typeof() function
+R variables
+--------------------------------------------------------------------------------
+
+### Attributes
+
+Any R object has 2 attributes: 
+* its storage mode (or "type") from R's point of view: logical, numeric, function, complex, character, raw, list, NULL, closure, special, builtin... It is accessed by the ```typeof()``` functions.
+* its class (a label describing the object). It is accessed by the ```class()``` function.
+
+Example : a number.
+
+```{r}
+typeof(1)
+class(1)
+```
+
+Example : an integer.
+
+```{r}
+typeof(1L)
+class(1L)
+```
+
+Example : a data frame.
+
+```{r}
+adf <- data.frame("ofes", "feslkfj", "lfdkj")
+typeof(adf)
+class(adf)
+```
+
+
+Functions have closure or builtin or special as type.
+
 ```{r}
 f <- function() {}
 f$a
-## Error mentionning type 'closure'
 ```
-logical, numeric (integer or double), function (closure or builtin or special)
+
+Note that ```mode()``` gives a result similar to ```typeof()``` but more compatible with the S language.
 
 
-Logical
 --------------------------------------------------------------------------------
+  
+R storage modes
+--------------------------------------------------------------------------------
+  
+  
+  
+### Logical
 
-Easy to convert (and back) with numeric. But this easy conversion can cause problems.
+Easy to convert (and back) with numeric. But this easy conversion can cause problems if one uses F and T as shortcuts for FALSE and TRUE.  
 ```{r}
 vector <- 1:10
 vector[c(0,1)]
 vector[c(F,T)]
+FALSE <- TRUE
+F <- TRUE
+vector[c(F,T)]
 ```
-Never use F and T shortcuts for False and TRUE.
+  
+Advice : Never use F and T shortcuts for FALSE and TRUE.
 
 
-Vector
 --------------------------------------------------------------------------------
+
+### Vector
 
 Contain values of the **same mode**.
+
 ```{r}
-x <- c(1,2,3,4); x
+x <- c(1, 2, 3, 4); x
 mode(x)
-x <- c(1,2,TRUE,3);x
+x <- c(1, 2, TRUE, 3); x
 mode(x)
-x <- c(1,2,"true", 4);x
+x <- c(1, 2, "TRUE", 4); x
 mode(x)
 ```
 
-
-Matrix
 --------------------------------------------------------------------------------
 
-Can also access an element with one index
+### Matrix
+
+Matrices are two-dimensional vectors. Elements are accessed giving their coordinates in the matrix, first index being 1 (and not 0 as for other languages).  
+  
 ```{r}
-a <- 1:30
-attr(a, "dim") <- c(5,6)
-class(a) <- "matrix"
-a
-a[11]
-a[1,3]
+mat <- matrix(c(1:6), nrow=2, byrow=TRUE)
+mat
+mat[1,2]
 ```
-As for vectors, all elements must be of the same mode. Insert a text, and all numeric will turn into characters.
 
+One can also access an element with one index, following "by column" order.
 
-List
+```{r}
+mat <- matrix(c(1:6), nrow=2, byrow=TRUE)
+mat
+mat[5]
+```
+
+A matrix can also be constructed manually, starting from a vector, and giving it dimensions and a class name.
+
+```{r}
+mat <- 1:30
+attr(mat, "dim") <- c(5, 6)
+class(mat) <- "matrix"
+mat
+```
+
+As for vectors, all elements must be of the same mode. Modifying a matrix of numbers by inserting a text value, will turn all numeric values into characters.  
+
+```{r}
+mat <- matrix(c(1:6), nrow=2, byrow=TRUE)
+mat
+mat[1,2] <- 'a'
+mat
+```
+
 --------------------------------------------------------------------------------
 
-Is a collection of objects with different modes. Access either by rank or by name.
+### List
+
+A list is a collection of objects with different modes (vectors, matrices, other lists...) and potentialy different sizes.  
+
 ```{r}
-mylist <- list(ages=c(12,35,34,62), 
-               height=c(135,128,164,165), 
+mylist <- list(ages=c(12,35,34,62),  
+               height=c(135,128,164,165),  
                sex=c("M", "F", "M", "M"))
+```
+
+One access the elements either by rank or by name.  
+
+```{r}
 mylist[[1]]
-class(mylist[[1]])
 mylist[1]
-class(mylist[1])
 mylist$height
 ```
 
+How to turn a list into a data.frame :  
+
+```{r}
+mylist <- list(ages=c(12,35,34,62),  
+               height=c(135,128,164,165),  
+               sex=c("M", "F", "M", "M"))  
+mydf <- as.data.frame(mylist)
+mydf
+```
 
 
-Data frames
 --------------------------------------------------------------------------------
 
-List with each element has same number of elements.
+### Data frames
+
+A data.frame is a list where each element has the same size.
 ```{r}
-data <- as.data.frame(mylist)
+data <- data.frame(ages=c(12,35,34,62), 
+               height=c(135,128,164,165), 
+               sex=c("M", "F", "M", "M"))
 data
 class(data); mode(data)
 ```
 
-### Data access
+Important note:  
+By default, data.frame() and read.table() convert all non-numerical values into factors.  
+Use stringsAsFactors=FALSE or as.is=TRUE to avoid this behavior. It can also be set in defaults by ```options(stringsAsFactors=FALSE)```
+
+
+#### Data access
+
+Access to data can be done by index or by label.
 
 ```{r}
+data <- data.frame(ages=c(12,35,34,62), 
+               height=c(135,128,164,165), 
+               sex=c("M", "F", "M", "M"))
 data[1]
 data[[1]]
+data[, 1]
 data$height
+data[, 'height']
 ```
 
 A good rule of thumb is to always **use labels** for accessing data frame columns (in case order changes), and **full labels** as partial labels imply R checking for all column names.
 
-### Subset
+#### Subset
 
-Using negative indices (not valid with column names).
+Using negative indices (not valid with labels).  
+
 ```{r}
-data[ , -2] 
+data <- data.frame(ages=c(12,35,34,62), 
+               height=c(135,128,164,165), 
+               sex=c("M", "F", "M", "M"))
+data[, -2] 
 ```
 
-Using -grep() but be carefull of which column really matches.
+Using ```-grep()``` but be carefull of which column really matches.  
+
 ```{r}
-data[ , -grep("h", names(data))]
+data[, -grep("h", names(data))]
 ```
 
-Using subset() and a - sign in front of the column name you want to discard.
+Using ```subset()``` and a - sign before the column name you want to discard.  
+
 ```{r}
 subset(data, select=-height)
 ```
 
-Factors
 --------------------------------------------------------------------------------
 
-Represent categorical variables.
+### Factors
+
+Represent categorical variables, each level being a different text/label. This representation is more memory-efficient than vectors of characters.
+
+```{r}
+hair <- factor(c("blond", "brown", "red", "blond")); hair
+class(hair)
+mode(hair)
+```
+
+To be more memory-efficient, factors encode the different levels internally as numbers.
+
+```{r}
+as.numeric(hair)
+```
+
+A factor variable can be modified, but only by using already-defined levels.
 
 ```{r}
 hair <- factor(c("blond", "brown", "red", "blond"))
-hair
-hair[2] <- "blond"
-hair[2] <- "grey"
-hair
-class(hair)
-mode(hair)
-as.numeric(hair)
+hair[2] <- "blond"; hair
+hair[2] <- "grey"; hair
 ```
-They are also more memory-efficient than tables of characters.
 
 
-Difficult to concatenate
+To add a value: turn a factor to character, add element and turn it to factor again.
+
 ```{r}
+hair <- factor(c("blond", "brown", "red", "blond")); hair
+char_hair <- as.character(hair)
+char_hair[2] <- "grey"
+hair <- factor(char_hair); hair
+```
+
+Factor variables are not easy to handle. For instance, they are difficult to concatenate as only the internal numeric coding will be concatenated. As workarounds, one can first turn the factors into character vectors, or alternatively use the list/unlist couple of functions.
+
+```{r}
+hair <- factor(c("blond", "brown", "red", "blond"))
 c(hair,hair)
 # Workaround 1
 factor( as.character(hair), as.character(hair))
 # Workaround 2
 unlist(list(hair, hair))
 ```
-To add a value: turn factor to character, add element and turn it to factor again.
 
-Use ordered=TRUE for ordered values.
+Use ordered=TRUE when when factors represent ordered values. This allows meaningful comparisons, otherwise only alphabetical comparison is available.
+
 ```{r}
-time <- factor( c(1,2,3,2,2,1), levels=c(1,2,3), labels=c("never", "sometimes", "always"), ordered=TRUE)
+time <- factor( 
+    c(1,2,3,2,2,1), 
+    levels=c(1,2,3), 
+    labels=c("never", "sometimes", "always"), 
+    ordered=TRUE)
 time
 time[2] < time[3]
 "sometimes" < "always"
 ```
 
-```{r}
-boxplot(measure~groups)
-summary(aov( measure~groups))
-groups <- as.factor(groups)
-groups
-summary(aov( measure~groups))
-```
-
-By default, data.frame() and read.table() convert all non-numerical values into factors.
-Use stringsAsFactors=FALSE or as.is=TRUE 
-It can also be set in defaults options(stringsAsFactors=FALSE)
+Important note:  
+By default, data.frame() and read.table() convert all non-numerical values into factors.  
+Use stringsAsFactors=FALSE or as.is=TRUE to avoid this behavior. It can also be set in defaults by ```options(stringsAsFactors=FALSE)```
 
 
-Other related functions
+--------------------------------------------------------------------------------
+  
+How to get information of the content/structure of a variable
 --------------------------------------------------------------------------------
 
 ### summary()
+
+This function displays a summary of the variable content.  
+NB: Class:none means that the class is the same as the mode.  
+
 ```{r}
+mylist <- list(ages=c(12,35,34,62),  
+               height=c(135,128,164,165),  
+               sex=c("M", "F", "M", "M"))
 summary(mylist)
 ```
-Class:none means that the class is the same as the mode.
 
-### str()
-**Detailed** information (as detailed as possible) about the structure of a model.
+When applied to a data frame, it summarizes each column's content (min, max, median, mean, quartiles).
+
 ```{r}
-str(mylist)
+mydf <- data.frame(ages=c(12,35,34,62),  
+               height=c(135,128,164,165),  
+               sex=c("M", "F", "M", "M"))
+summary(mydf)
 ```
 
 
+### str()
+
+*Detailed* information (as detailed as possible) about the structure of an object.
+
+```{r}
+mydf <- data.frame(
+    ages=c(12,35,34,62),  
+    height=c(135,128,164,165),  
+    sex=c("M", "F", "M", "M"))
+str(mydf)
+```
+
+
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.

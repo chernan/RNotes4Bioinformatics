@@ -1,18 +1,23 @@
 Object-Oriented programming in R
 ================================================================================
 
-Definitions
---------------------------------------------
 
-We use it without knowing it, nor worrying about it.
-A bit of vocab : object, class, attribute, method, inheritance, polymorphism.
+We use it without knowing it, nor worrying about it.  
+A bit of vocabulary : object, class, attribute, method, inheritance, polymorphism.  
+  
+Two frameworks: 
+* S3 ("old-style", widely used in base packages)
+* S4 ("formal classes", since R 1.7, widely used in Bioconductor).
 
-Two frameworks: S3 ("old-style", widely used in base packages) and S4 ("formal classes", since R 1.7, widely used in Bioconductor).
+Another framework called R5 is under development.
+
+
+--------------------------------------------------------------------------------
 
 S3 framework
-------------------------------------------------
+--------------------------------------------------------------------------------
 
-Class is a label attached to an object. Every object in R has a class ("numeric", "matrix", "lm", "factor"...).
+A 'class' is a label attached to an object. Every object in R has a class ("numeric", "matrix", "lm", "factor"...).
 
 ### Method dispatch
 
@@ -22,6 +27,7 @@ Example of the summary() function. Applied on different objects gives different 
 summary
 methods("summary")
 ```
+
 Non-visible functions can be accessed by getAnywhere("functionname")
 
 ```{r}
@@ -30,6 +36,7 @@ getAnywhere(summary.loess)
 ```
 
 Access all methods of a class.
+
 ```{r}
 methods(class="lm")
 ```
@@ -38,6 +45,7 @@ methods(class="lm")
 ### Creating an S3 object
 
 Example of the mygsea2 package.
+
 ```{r}
 #Create a list
 z <- list()
@@ -50,22 +58,24 @@ reduce.gsea <- function(object) {}
 reduce <- function(object) UseMethod("reduce")
 ```
 
-The user can easily access the attributes directly, modify it... and R will not complain!
+Caution : the user can easily access attributes directly, modify them... and R will not complain!
 
+
+--------------------------------------------------------------------------------
 
 S4 framework
 --------------------------------------------------------------------------------
 
 Based on the same "method dispatch" idea than S3, but more formal.
-```{r}
+
+```{r, eval=FALSE}
 setClass("GSEA",
          representation( nperms="numeric"  ),
          contains="genelist",
-         validity=function(object) {
-             
-         })
+         validity=function(object) {})
 gsea <- new("GSEA", nperms=1000)
 ```
+
 Checks are made for the validity of any created object. Properties include a name, representation, inheritance, prototype, validation(), etc. Attributes are stored in slots, similar to the components of a list for a S3 object, but use @ to "enter" the attributes of an object. S3 use print(), S4 use show(). "ANY" is the basic inheritance.
 
 One can choose whichever one wants, but in any case, avoid mixing S3 and S4.
@@ -73,18 +83,21 @@ One can choose whichever one wants, but in any case, avoid mixing S3 and S4.
 
 ### How to access information in an unknown object?
 
-class(object)
-look at documentation
-find if S3 or S4 names(object) or isS4(object)
-look at the methods available for the object
-methods(class="class") or showMethods(class="class")
-look at the attributes using $ or @
-if needed look at a method to see how it handles the attributes (method.class or getMethods("method", "class") )
+* class(object)
+* look at documentation
+* find if S3 or S4 with names(object) or isS4(object)
+* look at the methods available for the object with methods(class="class") or showMethods(class="class")
+* look at the attributes using $ or @
+* if needed, look at a method's source code to see how it handles the attributes (method.class or getMethods("method", "class") )
+
+--------------------------------------------------------------------------------
 
 R5 framework
 --------------------------------------------------------------------------------
 
-Still under development... See ?ReferenceClasses and http://github.com/hadley/devtools/wiki/R5
+Still under development... See ?ReferenceClasses and http://adv-r.had.co.nz/R5.html
 
+
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.

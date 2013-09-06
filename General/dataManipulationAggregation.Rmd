@@ -1,55 +1,184 @@
-Data manipulation/aggregation
+Data manipulation : aggregation, merge and format changes
 ================================================================================
 
-Contingency table
+This page describes how to apply functions on each line/column of a data frame, or on lines grouped in subsets using another variable.
+It will also show how to create a contingency table, and how to change from long to wide format, and reversely.
+
+1. Apply a function on a list/data.frame (apply, lapply, sapply)
+2. Aggregation (tapply, aggregate, by)
+3. Merge
+4. Split
+5. Contingency table
+6. Wide and long formats
+
 --------------------------------------------------------------------------------
 
-table()
 
-
-"Apply" family
+Apply a function on a list/data.frame
 --------------------------------------------------------------------------------
+
+The "apply" family of functions is useful when applying the same code on each element/line of a vector, list, data.frame etc. Each of the function can be applied on a list (or data frame) but returns results in a different format.
 
 ### apply()
 
-MAR=1 to loop on rows
-MAR=2 to loop on columns
+The most generic function.  
+Use it to apply another function on each column/row of a data frame.  
+The function to be applied can be already defined, or defined on-the-fly.  
+Supplementary parameters can be transmitted to already defined functions.  
+* Use MAR=1 to loop on rows
+* Use MAR=2 to loop on columns
 
-Other specialized function are often more efficient, like rowSums(matrix).
+```{r}
+mydf <- data.frame(
+    m0sd1 = rnorm(200, mean=0, sd=1),
+    m0sd10 = rnorm(200, mean=0, sd=10),
+    m0sd.1 = rnorm(200, mean=0, sd=.1),
+    m1.5sd1 = rnorm(200, mean=1.5, sd=1),
+    m0sd5 = rnorm(200, mean=0, sd=5))
+## Already defined function
+apply(mydf, MARGIN=2, mean)
+## Equivalent to mean(column, trim=0.1)
+apply(mydf, MARGIN=2, mean, trim=0.1)
+## Function defined on-the-fly
+apply(mydf, MARGIN=2, FUN=function(column) {return(c(mean(column), median(column)))} )
+```
+
+NB: When the function to be applied is simple, other specialized function are often more efficient, like rowSums(matrix) or rowMeans(matrix).
+  
 
 ### lapply() 
-to apply on the elements of a list
+
+Use it to apply a function on the elements of a list. It can be interesting to use ```as.data.frame``` on the result to get it in a more handy format. A better approach is to directly use ```sapply()```.
+  
+```{r}
+mylist <- list(
+    m0sd1 = rnorm(200, mean=0, sd=1),
+    m0sd10 = rnorm(2000, mean=0, sd=10),
+    m0sd.1 = rnorm(20, mean=0, sd=.1),
+    m1.5sd1 = rnorm(200, mean=1.5, sd=1),
+    m0sd5 = rnorm(200, mean=0, sd=5)
+)
+result <- lapply(mylist, FUN=function(x){return(c(mean=mean(x), median=median(x)))})
+result
+as.data.frame(result)
+```
+
 
 ### sapply() 
-to apply on the elements of a list and simplify the result to a vector if possible.
 
-### tapply(data, factorForGroups, FUN) 
-apply a function FUN on a matrix after aggregating data using a factor. Or one can use split(data[, "height"], data[ ,"sex"])
+Use it to apply on the elements of a list and simplify the result to a vector or a matrix, if possible.
 
+```{r}
+mylist <- list(
+    m0sd1 = rnorm(200, mean=0, sd=1),
+    m0sd10 = rnorm(2000, mean=0, sd=10),
+    m0sd.1 = rnorm(20, mean=0, sd=.1),
+    m1.5sd1 = rnorm(200, mean=1.5, sd=1),
+    m0sd5 = rnorm(200, mean=0, sd=5)
+)
+sapply(mylist, FUN=function(col){return(c(mean(col), median(col)))})
+```
 
-Aggregate
 --------------------------------------------------------------------------------
 
-aggregate(x, by, FUN) data.frame/**list**/function, works in a similar way to tapply() but:
-- works on whole data.frame (multiple columns
+Aggregation
+--------------------------------------------------------------------------------
+
+### tapply()
+
+> Usage : tapply(data, factorForGroups, FUN)
+
+Use it to apply a function FUN on a *vector*, after aggregating the values using a factor. 
+
+```{r}
+mydf <- data.frame(
+    age = c(19, 36, 63, 31, 43, 86),
+    height = c(157, 167, 182, 172, 168, 173),
+    sex = c('F', 'F', 'M', 'F', 'M', 'M')
+)
+tapply(mydf$age, INDEX=mydf$sex, FUN=mean)
+```
+
+
+On a *data frame*, one can use split to generate a list and combine it with lapply() or mapply().
+
+```{r}
+mydf <- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 172, 168, 173), sex = c('F', 'F', 'M', 'F', 'M', 'M'))
+split(mydf, mydf$sex)
+```
+
+```{r}
+lapply(split(mydf[, c('age','height')], mydf$sex), FUN=colMeans)
+```
+
+
+### aggregate
+
+aggregate(x, by, FUN) 
+
+Works similarly to tapply() but:
+- on a whole data.frame (multiple columns)
+- the 'by' argument must be a list
 - **only produces scalar summaries**
+
+```{r}
+mydf <- data.frame(
+    age = c(19, 36, 63, 31, 43, 86),
+    height = c(157, 167, 182, 172, 168, 173),
+    sex = c('F', 'F', 'M', 'F', 'M', 'M')
+)
+aggregate(mydf[, 1:2], mydf['sex'], mean)
+aggregate(mydf[, 1:2], mydf['sex'], paste0)
+```
+
 
 ```{r}
 data(iris)
 head(iris, 3)
-aggregate(iris[, 1:4], iris[5], FUN=mean)
-## Note that iris[5] is a list (as iris["Species"]), 
-## instead of iris[,5] which is a vector (as iris$Species)
+## Note that iris["Species"] is a list (as iris[5]), 
+## instead of iris$Species which is a vector (as iris[,5])
+aggregate(iris[, 1:4], iris["Species"], FUN=mean)
 ```
+
+
+### by
+
+This function is similar to tapply, but more general as it applies to data frames.  
+It first splits the input into multiple data frames and applies the function FUN on each sub-data frame.  
+
+```{r}
+mydf <- data.frame(
+    age = c(19, 36, 63, 31, 43, 86),
+    height = c(157, 167, 182, 172, 168, 173),
+    sex = c('F', 'F', 'M', 'F', 'M', 'M')
+)
+by(mydf[, 1:2], INDICES=mydf$sex, FUN=colMeans)
+```
+
+```{r}
+mydf <- data.frame(
+    age = c(19, 36, 63, 31, 43, 86),
+    height = c(157, 167, 182, 172, 168, 173),
+    sex = c('F', 'F', 'M', 'F', 'M', 'M')
+)
+by(mydf[, 1:2], INDICES=mydf$sex, 
+   FUN=function(df) {
+       apply(df, 2, summary)
+       })
+```
+
+--------------------------------------------------------------------------------
 
 Merge
 --------------------------------------------------------------------------------
 
-### merge()
-Merge two data frames, by column or by row. By default the function finds all common column names and use them all.
+### merge
+
+Merge two data frames, by column or by row. By default the function finds all common column names and use them all.  
 Interesting parameters include :
-'by' (by.x, by.y) to specify common columns to use for the merge
-'all' (all.x, all.x) to specify if all lines should be kept (even the ones without correspondance in the other data frame). 
+* 'by' (by.x, by.y) to specify common columns to use for the merge
+* 'all' (all.x, all.y) to specify if all lines should be kept (even the ones without correspondance in the other data frame). 
+
 ```{r}
 x <- data.frame(index=c(2,3,1), fruit=c("orange", "lemon", "grapefruit"))
 y <- data.frame(index=c(3,1,2,1), quantity=c(13, 6, 3, 5))
@@ -58,25 +187,63 @@ merge(x, y)
 
 A good practice is to specify each time by which column you want to merge for x and y.
 
-### union/intersect/setdiff/setequal
+### Union (Set operations)
 
-### match(newlist, reflist) 
-a general way for finding common values
+Intersetcion between values of two sets (vectors). Any duplicated value is discarded.
+
+```{r}
+set.seed(0)
+x <- trunc(runif(10, min=0, max=100),0)
+y <- trunc(runif(10, min=0, max=100),0)
+x;y
+union(x, y)
+```
+
+Other set operations are also possible. 
+* Intersection with intersect(x, y)
+* Difference (which ones of x are not in y) with setdiff(x,y). is.element() returns boolean values, as well as %in%.
+
+match(x, reflist) 
+is a more general way to find which values of a new list x are in a reference list (and at which position).
 
 
-Split data according to groups information
 --------------------------------------------------------------------------------
 
-split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.
+Split
+--------------------------------------------------------------------------------
+
+split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.  
+See tapply().
 
 
-From wide to long format
+--------------------------------------------------------------------------------
+
+Contingency table
+--------------------------------------------------------------------------------
+
+A contingency table counts the combinations of two factors. To create a contingency table, use the ```table()``` function.
+
+```{r}
+x <- data.frame(fruit = c("orange", "lemon", "lemon", "grapefruit", "grapefruit", "orange", "lemon"), country = c("Spain", "Spain", "California", "California", "Spain", "Spain", "California"))
+table(x)
+```
+
+--------------------------------------------------------------------------------
+
+Wide and long formats
 --------------------------------------------------------------------------------
 
 stack() transforms a matrix with headers (wide format), into one 2-columns data-frame with measurements/labels (long format).
+
+```{r}
+mydf <- data.frame(x=trunc(runif(10, min=0, max=100),0), y=round(runif(10, min=0, max=1),1))
+stack(mydf)
+```
+
 Correlation need wide format, modeling need long format.
 
 reshape() has more possibilities, and is consequently more complex.
 
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.

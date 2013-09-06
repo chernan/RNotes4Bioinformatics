@@ -1,18 +1,19 @@
 <body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">R Notes for Bioinformatics</h1>
+    </header>
     <div id="container">
-      <div class="inner">
-
-        <header>
-          <h1>R Notes For Bioinformatics</h1>
-          <h2>A collection of notes describing a few aspects of R for bioinformatics, and sometimes more specifically, for proteomics.</h2>
-        </header>
-
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/chernan/RNotes4Bioinformatics/zipball/gh-pages" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/chernan/RNotes4Bioinformatics/tarball/gh-pages" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/chernan/RNotes4Bioinformatics" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <section id="main_content">
-
-        <hr>
+      <p class="tagline">A collection of notes describing a few aspects of R for bioinformatics.</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/tarball/gh-pages" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics/zipball/gh-pages" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/chernan/RNotes4Bioinformatics" class="code">View R Notes for Bioinformatics on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+        

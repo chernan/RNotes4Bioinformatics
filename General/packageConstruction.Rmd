@@ -3,6 +3,12 @@ Packages
 
 Note that using RStudio greatly facilitates package creation and build, as all the process has been completely integrated in the IDE.
 
+1. Creation
+2. Documentation
+3. Build
+
+--------------------------------------------------------------------------------
+
 Creation
 --------------------------------------------------------------------------------
 
@@ -12,16 +18,17 @@ all.files <- list.files("myFolder/", recursive=TRUE, full.name=TRUE)
 package.skeleton("PackageName", code_files=all.files, namespace=TRUE, force=TRUE)
 ```
 
-
-All *.R files will be put directly inside R/ folder, and documentation will be automatically generated for each function/file in doc/.
+All pre-existing *.R files will be put directly inside an R/ folder, and documentation will be automatically generated for each function/file in doc/.
 See "Documentation" paragraph.
 
 
+--------------------------------------------------------------------------------
 
 Documentation
 --------------------------------------------------------------------------------
 
 One recommended way to manage package documentation is by using roxygen. The main advantage is that code and documentation are in the same file, facilitating documentation update during development.
+
 ```{r, eval=FALSE}
 install.packages("roxygen")
 library("roxygen")
@@ -33,15 +40,15 @@ roxygenize("PackageName", copy.package=FALSE,)
 ```
 
 
+--------------------------------------------------------------------------------
+
 Build
 --------------------------------------------------------------------------------
 
 It's a 2-step process. First check the global structure of the package, then build it.
 
 Check global structure (must be located above PackageName folder)
-```{r, eval=FALSE}
-R CMD check PackageName
-```
+> R CMD check PackageName
 
 
 Build package (must be located above PackageName folder)  
@@ -56,5 +63,6 @@ Note: In Unix environment, building a R package needs pdflatex (and many other d
 > sudo apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
 
 
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
