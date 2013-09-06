@@ -1,39 +1,55 @@
 String manipulation
 ================================================================================
 
+See also Factors in "Data structures" chapter.
+
+1. Concatenate
+2. Split
+3. Regular expressions (grepl, grep, sub)
+
+
+--------------------------------------------------------------------------------
+
 Concatenate
 --------------------------------------------------------------------------------
 
-paste a set of character strings, and can do replication in strings.
+paste and paste0 concatenate a set of character strings. They can also do replication in strings.
 
 ```{r}
 paste("Chr", c(1:22, "X", "Y"), sep="")
+paste0("Chr", c(1:22, "X", "Y"))
 ```
+
+--------------------------------------------------------------------------------
 
 Split
 --------------------------------------------------------------------------------
 
-strsplit(vector, separator)
-
-strsplit on the empty string separates all characters.
+Spliting characters is done by the strsplit function.  
+Using the empty string as separator separates all characters.
 
 ```{r}
-sequence <- "ATTGCCTGGATT"
-strsplit(sequence, "")
+strsplit("ATTGCCTGGATT", "")
 ```
+
+
+--------------------------------------------------------------------------------
 
 Regular expressions
 --------------------------------------------------------------------------------
 
-grep() find if a string contains a given pattern (see also regexpr())
+Regular expressions can be applied on character strings.  
+grepl() finds if a string contains a given pattern using or not the Perl syntax (see also regexpr()).
 
-sub() find a pattern and replace it (see also ). If it can't replace anything in a string, the full string is itself returned.
+```{r}
+multi_strings <- c("Giraf", "Cow", "Frog", "Panda")
+grepl(pattern="^F", x=multi_strings, perl=TRUE)
+```
 
-See also
+grep() returns the index of the matching strings, if any.
+sub() find a pattern and replace it. If it can't replace anything in a string, the full string is itself returned.
+
+
 --------------------------------------------------------------------------------
-
-See also factors in "Data structures" chapter.
-
-
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.

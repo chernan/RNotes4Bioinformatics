@@ -1,6 +1,11 @@
 Workspace management
 ========================================================
 
+Managing workspace packages.
+
+
+--------------------------------------------------------------------------------
+
 Installing a package
 --------------------------------------------------------------------------------
 
@@ -13,6 +18,19 @@ From outside any R session
 Download from CRAN, by ex. http://cran.r-project.org/web/packages/knitr/index.html
 
 > R CMD INSTALL knitr
+
+--------------------------------------------------------------------------------
+
+Loading a package
+--------------------------------------------------------------------------------
+
+Load a package, with or without the localisation to be used.
+```{r, eval=FALSE}
+library("Biobase", lib.loc="/home/chernan/R/i686-pc-linux-gnu-library/2.15")
+```
+
+
+--------------------------------------------------------------------------------
 
 List loaded packages
 --------------------------------------------------------------------------------
@@ -29,26 +47,38 @@ Get the list of all currently loaded packages, and a few information on them.
 installed.packages()[.packages(),]
 ```
 
-Load/detach a package
 --------------------------------------------------------------------------------
 
+Save/Load
+--------------------------------------------------------------------------------
+
+Save the list of loaded packages in a file, and load packages from this file.
+
+* Write the list of loaded packages in a file
 ```{r, eval=FALSE}
-## Detach a package
-detach("package:affy", unload=TRUE)
-
-## Load a package
-library("Biobase", lib.loc="/home/chernan/R/i686-pc-linux-gnu-library/2.15")
-
-## Write the list in a file
 instPackages <- installed.packages()[.packages(),]
 write.table(instPackages, "loadedPackages.txt", quote=TRUE)
-
-## Load packages from a file
+```
+* Load packages from a file
+```{r, eval=FALSE}
 packagesToLoad <- read.table("loadedPackages.txt", header=TRUE, stringsAsFactors=FALSE)
 apply(packagesToLoad, 1, FUN=function(aLib){ 
     library(package=aLib["Package"], lib.loc=aLib["LibPath"], character.only=TRUE)
 })
 ```
 
+--------------------------------------------------------------------------------
+
+Detach a package
+--------------------------------------------------------------------------------
+
+Detach a package
+
+```{r, eval=FALSE}
+detach("package:affy", unload=TRUE)
+```
+
+
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
