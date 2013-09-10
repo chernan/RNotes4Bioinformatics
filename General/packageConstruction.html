@@ -35,6 +35,14 @@
 
 <p>Note that using RStudio greatly facilitates package creation and build, as all the process has been completely integrated in the IDE.</p>
 
+<ol>
+<li>Creation</li>
+<li>Documentation</li>
+<li>Build</li>
+</ol>
+
+<hr/>
+
 <h2>Creation</h2>
 
 <p>One can use package.skeleton to create a package from a set of R scripts located in a folder.</p>
@@ -43,8 +51,10 @@
 package.skeleton(&quot;PackageName&quot;, code_files = all.files, namespace = TRUE, force = TRUE)
 </code></pre>
 
-<p>All *.R files will be put directly inside R/ folder, and documentation will be automatically generated for each function/file in doc/.
+<p>All pre-existing *.R files will be put directly inside an R/ folder, and documentation will be automatically generated for each function/file in doc/.
 See &ldquo;Documentation&rdquo; paragraph.</p>
+
+<hr/>
 
 <h2>Documentation</h2>
 
@@ -59,14 +69,17 @@ library(&quot;roxygen&quot;)
 <pre><code class="r">roxygenize(&quot;PackageName&quot;, copy.package = FALSE, )
 </code></pre>
 
+<hr/>
+
 <h2>Build</h2>
 
 <p>It&#39;s a 2-step process. First check the global structure of the package, then build it.</p>
 
 <p>Check global structure (must be located above PackageName folder)</p>
 
-<pre><code class="r">R CMD check PackageName
-</code></pre>
+<blockquote>
+<p>R CMD check PackageName</p>
+</blockquote>
 
 <p>Build package (must be located above PackageName folder)  </p>
 
@@ -82,6 +95,8 @@ library(&quot;roxygen&quot;)
 <p>sudo apt-get install texlive-latex-base
 sudo apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended</p>
 </blockquote>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

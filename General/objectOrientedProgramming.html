@@ -33,16 +33,23 @@
         
 <h1>Object-Oriented programming in R</h1>
 
-<h2>Definitions</h2>
+<p>We use it without knowing it, nor worrying about it.<br/>
+A bit of vocabulary : object, class, attribute, method, inheritance, polymorphism.  </p>
 
-<p>We use it without knowing it, nor worrying about it.
-A bit of vocab : object, class, attribute, method, inheritance, polymorphism.</p>
+<p>Two frameworks: </p>
 
-<p>Two frameworks: S3 (&ldquo;old-style&rdquo;, widely used in base packages) and S4 (&ldquo;formal classes&rdquo;, since R 1.7, widely used in Bioconductor).</p>
+<ul>
+<li>S3 (&ldquo;old-style&rdquo;, widely used in base packages)</li>
+<li>S4 (&ldquo;formal classes&rdquo;, since R 1.7, widely used in Bioconductor).</li>
+</ul>
+
+<p>Another framework called R5 is under development.</p>
+
+<hr/>
 
 <h2>S3 framework</h2>
 
-<p>Class is a label attached to an object. Every object in R has a class (&ldquo;numeric&rdquo;, &ldquo;matrix&rdquo;, &ldquo;lm&rdquo;, &ldquo;factor&rdquo;&hellip;).</p>
+<p>A &#39;class&#39; is a label attached to an object. Every object in R has a class (&ldquo;numeric&rdquo;, &ldquo;matrix&rdquo;, &ldquo;lm&rdquo;, &ldquo;factor&rdquo;&hellip;).</p>
 
 <h3>Method dispatch</h3>
 
@@ -53,31 +60,32 @@ A bit of vocab : object, class, attribute, method, inheritance, polymorphism.</p
 
 <pre><code>## function (object, ...) 
 ## UseMethod(&quot;summary&quot;)
-## &lt;bytecode: 0xb65ebf74&gt;
+## &lt;bytecode: 0xaa03898&gt;
 ## &lt;environment: namespace:base&gt;
 </code></pre>
 
 <pre><code class="r">methods(&quot;summary&quot;)
 </code></pre>
 
-<pre><code>##  [1] summary.aov             summary.aovlist        
-##  [3] summary.aspell*         summary.connection     
-##  [5] summary.data.frame      summary.Date           
-##  [7] summary.default         summary.ecdf*          
-##  [9] summary.factor          summary.ggplot*        
-## [11] summary.glm             summary.infl           
-## [13] summary.lm              summary.loess*         
-## [15] summary.loglm*          summary.manova         
-## [17] summary.matrix          summary.mlm            
-## [19] summary.negbin*         summary.nls*           
-## [21] summary.packageStatus*  summary.PDF_Dictionary*
-## [23] summary.PDF_Stream*     summary.polr*          
-## [25] summary.POSIXct         summary.POSIXlt        
-## [27] summary.ppr*            summary.prcomp*        
-## [29] summary.princomp*       summary.rlm*           
-## [31] summary.srcfile         summary.srcref         
-## [33] summary.stepfun         summary.stl*           
-## [35] summary.table           summary.tukeysmooth*   
+<pre><code>##  [1] summary.aov                  summary.aovlist             
+##  [3] summary.aspell*              summary.connection          
+##  [5] summary.data.frame           summary.Date                
+##  [7] summary.default              summary.ecdf*               
+##  [9] summary.factor               summary.ggplot*             
+## [11] summary.glm                  summary.infl                
+## [13] summary.lm                   summary.loess*              
+## [15] summary.loglm*               summary.manova              
+## [17] summary.matrix               summary.mlm                 
+## [19] summary.negbin*              summary.nls*                
+## [21] summary.packageStatus*       summary.PDF_Dictionary*     
+## [23] summary.PDF_Stream*          summary.polr*               
+## [25] summary.POSIXct              summary.POSIXlt             
+## [27] summary.ppr*                 summary.prcomp*             
+## [29] summary.princomp*            summary.rlm*                
+## [31] summary.srcfile              summary.srcref              
+## [33] summary.stepfun              summary.stl*                
+## [35] summary.table                summary.tukeysmooth*        
+## [37] summary.XMLInternalDocument*
 ## 
 ##    Non-visible functions are asterisked
 </code></pre>
@@ -104,7 +112,7 @@ A bit of vocab : object, class, attribute, method, inheritance, polymorphism.</p
 ##     class(object) &lt;- &quot;summary.loess&quot;
 ##     object
 ## }
-## &lt;bytecode: 0xb96f0f4&gt;
+## &lt;bytecode: 0xb0a0108&gt;
 ## &lt;environment: namespace:stats&gt;
 </code></pre>
 
@@ -146,7 +154,9 @@ reduce.gsea &lt;- function(object) {
 reduce &lt;- function(object) UseMethod(&quot;reduce&quot;)
 </code></pre>
 
-<p>The user can easily access the attributes directly, modify it&hellip; and R will not complain!</p>
+<p>Caution : the user can easily access attributes directly, modify them&hellip; and R will not complain!</p>
+
+<hr/>
 
 <h2>S4 framework</h2>
 
@@ -154,18 +164,8 @@ reduce &lt;- function(object) UseMethod(&quot;reduce&quot;)
 
 <pre><code class="r">setClass(&quot;GSEA&quot;, representation(nperms = &quot;numeric&quot;), contains = &quot;genelist&quot;, 
     validity = function(object) {
-
     })
-</code></pre>
-
-<pre><code>## Error: No definition was found for superclass &quot;genelist&quot; in the
-## specification of class &quot;GSEA&quot;
-</code></pre>
-
-<pre><code class="r">gsea &lt;- new(&quot;GSEA&quot;, nperms = 1000)
-</code></pre>
-
-<pre><code>## Error: &quot;GSEA&quot; is not a defined class
+gsea &lt;- new(&quot;GSEA&quot;, nperms = 1000)
 </code></pre>
 
 <p>Checks are made for the validity of any created object. Properties include a name, representation, inheritance, prototype, validation(), etc. Attributes are stored in slots, similar to the components of a list for a S3 object, but use @ to &ldquo;enter&rdquo; the attributes of an object. S3 use print(), S4 use show(). &ldquo;ANY&rdquo; is the basic inheritance.</p>
@@ -174,17 +174,22 @@ reduce &lt;- function(object) UseMethod(&quot;reduce&quot;)
 
 <h3>How to access information in an unknown object?</h3>
 
-<p>class(object)
-look at documentation
-find if S3 or S4 names(object) or isS4(object)
-look at the methods available for the object
-methods(class=&ldquo;class&rdquo;) or showMethods(class=&ldquo;class&rdquo;)
-look at the attributes using $ or @
-if needed look at a method to see how it handles the attributes (method.class or getMethods(&ldquo;method&rdquo;, &ldquo;class&rdquo;) )</p>
+<ul>
+<li>class(object)</li>
+<li>look at documentation</li>
+<li>find if S3 or S4 with names(object) or isS4(object)</li>
+<li>look at the methods available for the object with methods(class=&ldquo;class&rdquo;) or showMethods(class=&ldquo;class&rdquo;)</li>
+<li>look at the attributes using $ or @</li>
+<li>if needed, look at a method&#39;s source code to see how it handles the attributes (method.class or getMethods(&ldquo;method&rdquo;, &ldquo;class&rdquo;) )</li>
+</ul>
+
+<hr/>
 
 <h2>R5 framework</h2>
 
-<p>Still under development&hellip; See ?ReferenceClasses and <a href="http://github.com/hadley/devtools/wiki/R5">http://github.com/hadley/devtools/wiki/R5</a></p>
+<p>Still under development&hellip; See ?ReferenceClasses and <a href="http://adv-r.had.co.nz/R5.html">http://adv-r.had.co.nz/R5.html</a></p>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

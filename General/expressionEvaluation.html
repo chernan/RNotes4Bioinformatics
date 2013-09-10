@@ -33,6 +33,8 @@
         
 <h1>Expression evaluation</h1>
 
+<hr/>
+
 <h2>Assign and retrieve variables on the fly</h2>
 
 <h3>Assign/Get</h3>
@@ -43,27 +45,30 @@
 get(&quot;x&quot;)
 </code></pre>
 
-<pre><code>## [1] 0.6101
+<pre><code>## [1] 0.5767
 </code></pre>
 
 <pre><code class="r">
 patientid &lt;- &quot;10&quot;
-assign(paste(&quot;treatment&quot;, patientid, sep = &quot;&quot;), sample(c(&quot;control&quot;, &quot;treatment&quot;), 
-    1))
+assign(paste0(&quot;treatment&quot;, patientid), sample(c(&quot;control&quot;, &quot;treatment&quot;), 1))
 treatment10
 </code></pre>
 
-<pre><code>## [1] &quot;control&quot;
+<pre><code>## [1] &quot;treatment&quot;
 </code></pre>
 
 <h3>Eval</h3>
 
-<pre><code class="r">eval(parse(text=paste(&quot;i &lt;- &quot;, &quot;\&quot;lots lots lots\&quot;&quot;)))
+<p>This function is able to evaluate a character string as if it was direct R code.</p>
+
+<pre><code class="r">eval(parse(text=paste0(&quot;i &lt;- &quot;, &quot;\&quot;lots lots lots\&quot;&quot;)))
 i
 </code></pre>
 
 <pre><code>## [1] &quot;lots lots lots&quot;
 </code></pre>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

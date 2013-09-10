@@ -33,6 +33,19 @@
         
 <h1>Input/output</h1>
 
+<ol>
+<li>Input
+
+<ul>
+<li>Read a table from a file</li>
+<li>Download a file from the Internet</li>
+<li>Read lines from a web page</li>
+</ul></li>
+<li>Output</li>
+</ol>
+
+<hr/>
+
 <h2>Input</h2>
 
 <h3>Read a table from a file</h3>
@@ -50,7 +63,7 @@
     destfile = &quot;~/produitsBiocides2011.csv&quot;, method = &quot;wget&quot;)
 </code></pre>
 
-<h3>Read lines from a web pages</h3>
+<h3>Read lines from a web page</h3>
 
 <p>In order to read a web page directly, one should first open a connexion to the web page giving a URL. Then this connexion is used to read a given number of lines. n=-1L is the default value and means that everything will be read, but one can also provide a specific number of lines.)</p>
 
@@ -70,6 +83,8 @@ googleMainPage &lt;- readLines(url, n = -1)
 <pre><code class="r">close(con = url)
 </code></pre>
 
+<hr/>
+
 <h2>Output</h2>
 
 <h3>Write a table</h3>
@@ -81,6 +96,8 @@ Row names are also saved. Consequently, the first line has one element less than
 write.table(dframe, &quot;dataframe.txt&quot;, append = FALSE, sep = &quot;\t&quot;, row.names = FALSE, 
     quote = FALSE, col.names = FALSE)
 </code></pre>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

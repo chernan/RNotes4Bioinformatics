@@ -33,11 +33,87 @@
         
 <h1>R data structures</h1>
 
-<p>Any R object has 2 attributes: mode (type of data: logical, numeric, function, complex, character, raw, list,&hellip;) and class (label)</p>
+<ol>
+<li>R variables
 
-<h2>R storage modes</h2>
+<ul>
+<li>Attributes</li>
+</ul></li>
+<li>R storage modes
 
-<p>Obtained by the typeof() function</p>
+<ul>
+<li>Logical</li>
+<li>Vector</li>
+<li>Matrix</li>
+<li>List</li>
+<li>Data frame (Data access, Subset)</li>
+<li>Factor</li>
+</ul></li>
+<li>How to get information of the content/structure of a variable
+
+<ul>
+<li>summary()</li>
+<li>str()</li>
+</ul></li>
+</ol>
+
+<hr/>
+
+<h2>R variables</h2>
+
+<h3>Attributes</h3>
+
+<p>Any R object has 2 attributes: </p>
+
+<ul>
+<li>its storage mode (or &ldquo;type&rdquo;) from R&#39;s point of view: logical, numeric, function, complex, character, raw, list, NULL, closure, special, builtin&hellip; It is accessed by the <code>typeof()</code> functions.</li>
+<li>its class (a label describing the object). It is accessed by the <code>class()</code> function.</li>
+</ul>
+
+<p>Example : a number.</p>
+
+<pre><code class="r">typeof(1)
+</code></pre>
+
+<pre><code>## [1] &quot;double&quot;
+</code></pre>
+
+<pre><code class="r">class(1)
+</code></pre>
+
+<pre><code>## [1] &quot;numeric&quot;
+</code></pre>
+
+<p>Example : an integer.</p>
+
+<pre><code class="r">typeof(1L)
+</code></pre>
+
+<pre><code>## [1] &quot;integer&quot;
+</code></pre>
+
+<pre><code class="r">class(1L)
+</code></pre>
+
+<pre><code>## [1] &quot;integer&quot;
+</code></pre>
+
+<p>Example : a data frame.</p>
+
+<pre><code class="r">adf &lt;- data.frame(&quot;ofes&quot;, &quot;feslkfj&quot;, &quot;lfdkj&quot;)
+typeof(adf)
+</code></pre>
+
+<pre><code>## [1] &quot;list&quot;
+</code></pre>
+
+<pre><code class="r">class(adf)
+</code></pre>
+
+<pre><code>## [1] &quot;data.frame&quot;
+</code></pre>
+
+<p>Functions have closure or builtin or special as type.</p>
 
 <pre><code class="r">f &lt;- function() {
 }
@@ -47,14 +123,15 @@ f$a
 <pre><code>## Error: objet de type &#39;closure&#39; non indiçable
 </code></pre>
 
-<pre><code class="r">## Error mentionning type &#39;closure&#39;
-</code></pre>
+<p>Note that <code>mode()</code> gives a result similar to <code>typeof()</code> but more compatible with the S language.</p>
 
-<p>logical, numeric (integer or double), function (closure or builtin or special)</p>
+<hr/>
 
-<h2>Logical</h2>
+<h2>R storage modes</h2>
 
-<p>Easy to convert (and back) with numeric. But this easy conversion can cause problems.</p>
+<h3>Logical</h3>
+
+<p>Easy to convert (and back) with numeric. But this easy conversion can cause problems if one uses F and T as shortcuts for FALSE and TRUE.  </p>
 
 <pre><code class="r">vector &lt;- 1:10
 vector[c(0, 1)]
@@ -69,9 +146,24 @@ vector[c(0, 1)]
 <pre><code>## [1]  2  4  6  8 10
 </code></pre>
 
-<p>Never use F and T shortcuts for False and TRUE.</p>
+<pre><code class="r">FALSE &lt;- TRUE
+</code></pre>
 
-<h2>Vector</h2>
+<pre><code>## Error: membre gauche de l&#39;assignation (do_set) incorrect
+</code></pre>
+
+<pre><code class="r">F &lt;- TRUE
+vector[c(F, T)]
+</code></pre>
+
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10
+</code></pre>
+
+<p>Advice : Never use F and T shortcuts for FALSE and TRUE.</p>
+
+<hr/>
+
+<h3>Vector</h3>
 
 <p>Contain values of the <strong>same mode</strong>.</p>
 
@@ -101,11 +193,11 @@ x
 <pre><code>## [1] &quot;numeric&quot;
 </code></pre>
 
-<pre><code class="r">x &lt;- c(1, 2, &quot;true&quot;, 4)
+<pre><code class="r">x &lt;- c(1, 2, &quot;TRUE&quot;, 4)
 x
 </code></pre>
 
-<pre><code>## [1] &quot;1&quot;    &quot;2&quot;    &quot;true&quot; &quot;4&quot;
+<pre><code>## [1] &quot;1&quot;    &quot;2&quot;    &quot;TRUE&quot; &quot;4&quot;
 </code></pre>
 
 <pre><code class="r">mode(x)
@@ -114,14 +206,50 @@ x
 <pre><code>## [1] &quot;character&quot;
 </code></pre>
 
-<h2>Matrix</h2>
+<hr/>
 
-<p>Can also access an element with one index</p>
+<h3>Matrix</h3>
 
-<pre><code class="r">a &lt;- 1:30
-attr(a, &quot;dim&quot;) &lt;- c(5, 6)
-class(a) &lt;- &quot;matrix&quot;
-a
+<p>Matrices are two-dimensional vectors. Elements are accessed giving their coordinates in the matrix, first index being 1 (and not 0 as for other languages).  </p>
+
+<pre><code class="r">mat &lt;- matrix(c(1:6), nrow = 2, byrow = TRUE)
+mat
+</code></pre>
+
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+</code></pre>
+
+<pre><code class="r">mat[1, 2]
+</code></pre>
+
+<pre><code>## [1] 2
+</code></pre>
+
+<p>One can also access an element with one index, following &ldquo;by column&rdquo; order.</p>
+
+<pre><code class="r">mat &lt;- matrix(c(1:6), nrow = 2, byrow = TRUE)
+mat
+</code></pre>
+
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+</code></pre>
+
+<pre><code class="r">mat[5]
+</code></pre>
+
+<pre><code>## [1] 3
+</code></pre>
+
+<p>A matrix can also be constructed manually, starting from a vector, and giving it dimensions and a class name.</p>
+
+<pre><code class="r">mat &lt;- 1:30
+attr(mat, &quot;dim&quot;) &lt;- c(5, 6)
+class(mat) &lt;- &quot;matrix&quot;
+mat
 </code></pre>
 
 <pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
@@ -132,36 +260,42 @@ a
 ## [5,]    5   10   15   20   25   30
 </code></pre>
 
-<pre><code class="r">a[11]
+<p>As for vectors, all elements must be of the same mode. Modifying a matrix of numbers by inserting a text value, will turn all numeric values into characters.  </p>
+
+<pre><code class="r">mat &lt;- matrix(c(1:6), nrow = 2, byrow = TRUE)
+mat
 </code></pre>
 
-<pre><code>## [1] 11
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
 </code></pre>
 
-<pre><code class="r">a[1, 3]
+<pre><code class="r">mat[1, 2] &lt;- &quot;a&quot;
+mat
 </code></pre>
 
-<pre><code>## [1] 11
+<pre><code>##      [,1] [,2] [,3]
+## [1,] &quot;1&quot;  &quot;a&quot;  &quot;3&quot; 
+## [2,] &quot;4&quot;  &quot;5&quot;  &quot;6&quot;
 </code></pre>
 
-<p>As for vectors, all elements must be of the same mode. Insert a text, and all numeric will turn into characters.</p>
+<hr/>
 
-<h2>List</h2>
+<h3>List</h3>
 
-<p>Is a collection of objects with different modes. Access either by rank or by name.</p>
+<p>A list is a collection of objects with different modes (vectors, matrices, other lists&hellip;) and potentialy different sizes.  </p>
 
 <pre><code class="r">mylist &lt;- list(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), sex = c(&quot;M&quot;, 
     &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
-mylist[[1]]
+</code></pre>
+
+<p>One access the elements either by rank or by name.  </p>
+
+<pre><code class="r">mylist[[1]]
 </code></pre>
 
 <pre><code>## [1] 12 35 34 62
-</code></pre>
-
-<pre><code class="r">class(mylist[[1]])
-</code></pre>
-
-<pre><code>## [1] &quot;numeric&quot;
 </code></pre>
 
 <pre><code class="r">mylist[1]
@@ -171,23 +305,35 @@ mylist[[1]]
 ## [1] 12 35 34 62
 </code></pre>
 
-<pre><code class="r">class(mylist[1])
-</code></pre>
-
-<pre><code>## [1] &quot;list&quot;
-</code></pre>
-
 <pre><code class="r">mylist$height
 </code></pre>
 
 <pre><code>## [1] 135 128 164 165
 </code></pre>
 
-<h2>Data frames</h2>
+<p>How to turn a list into a data.frame :  </p>
 
-<p>List with each element has same number of elements.</p>
+<pre><code class="r">mylist &lt;- list(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), sex = c(&quot;M&quot;, 
+    &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+mydf &lt;- as.data.frame(mylist)
+mydf
+</code></pre>
 
-<pre><code class="r">data &lt;- as.data.frame(mylist)
+<pre><code>##   ages height sex
+## 1   12    135   M
+## 2   35    128   F
+## 3   34    164   M
+## 4   62    165   M
+</code></pre>
+
+<hr/>
+
+<h3>Data frames</h3>
+
+<p>A data.frame is a list where each element has the same size.</p>
+
+<pre><code class="r">data &lt;- data.frame(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), 
+    sex = c(&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
 data
 </code></pre>
 
@@ -210,9 +356,17 @@ data
 <pre><code>## [1] &quot;list&quot;
 </code></pre>
 
-<h3>Data access</h3>
+<p>Important note:<br/>
+By default, data.frame() and read.table() convert all non-numerical values into factors.<br/>
+Use stringsAsFactors=FALSE or as.is=TRUE to avoid this behavior. It can also be set in defaults by <code>options(stringsAsFactors=FALSE)</code></p>
 
-<pre><code class="r">data[1]
+<h4>Data access</h4>
+
+<p>Access to data can be done by index or by label.</p>
+
+<pre><code class="r">data &lt;- data.frame(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), 
+    sex = c(&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+data[1]
 </code></pre>
 
 <pre><code>##   ages
@@ -228,7 +382,19 @@ data
 <pre><code>## [1] 12 35 34 62
 </code></pre>
 
+<pre><code class="r">data[, 1]
+</code></pre>
+
+<pre><code>## [1] 12 35 34 62
+</code></pre>
+
 <pre><code class="r">data$height
+</code></pre>
+
+<pre><code>## [1] 135 128 164 165
+</code></pre>
+
+<pre><code class="r">data[, &quot;height&quot;]
 </code></pre>
 
 <pre><code>## [1] 135 128 164 165
@@ -236,11 +402,13 @@ data
 
 <p>A good rule of thumb is to always <strong>use labels</strong> for accessing data frame columns (in case order changes), and <strong>full labels</strong> as partial labels imply R checking for all column names.</p>
 
-<h3>Subset</h3>
+<h4>Subset</h4>
 
-<p>Using negative indices (not valid with column names).</p>
+<p>Using negative indices (not valid with labels).  </p>
 
-<pre><code class="r">data[, -2]
+<pre><code class="r">data &lt;- data.frame(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), 
+    sex = c(&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+data[, -2]
 </code></pre>
 
 <pre><code>##   ages sex
@@ -250,7 +418,7 @@ data
 ## 4   62   M
 </code></pre>
 
-<p>Using -grep() but be carefull of which column really matches.</p>
+<p>Using <code>-grep()</code> but be carefull of which column really matches.  </p>
 
 <pre><code class="r">data[, -grep(&quot;h&quot;, names(data))]
 </code></pre>
@@ -262,7 +430,7 @@ data
 ## 4   62   M
 </code></pre>
 
-<p>Using subset() and a - sign in front of the column name you want to discard.</p>
+<p>Using <code>subset()</code> and a - sign before the column name you want to discard.  </p>
 
 <pre><code class="r">subset(data, select = -height)
 </code></pre>
@@ -274,29 +442,17 @@ data
 ## 4   62   M
 </code></pre>
 
-<h2>Factors</h2>
+<hr/>
 
-<p>Represent categorical variables.</p>
+<h3>Factors</h3>
+
+<p>Represent categorical variables, each level being a different text/label. This representation is more memory-efficient than vectors of characters.</p>
 
 <pre><code class="r">hair &lt;- factor(c(&quot;blond&quot;, &quot;brown&quot;, &quot;red&quot;, &quot;blond&quot;))
 hair
 </code></pre>
 
 <pre><code>## [1] blond brown red   blond
-## Levels: blond brown red
-</code></pre>
-
-<pre><code class="r">hair[2] &lt;- &quot;blond&quot;
-hair[2] &lt;- &quot;grey&quot;
-</code></pre>
-
-<pre><code>## Warning: niveau de facteur incorrect, NAs générés
-</code></pre>
-
-<pre><code class="r">hair
-</code></pre>
-
-<pre><code>## [1] blond &lt;NA&gt;  red   blond
 ## Levels: blond brown red
 </code></pre>
 
@@ -312,20 +468,65 @@ hair[2] &lt;- &quot;grey&quot;
 <pre><code>## [1] &quot;numeric&quot;
 </code></pre>
 
+<p>To be more memory-efficient, factors encode the different levels internally as numbers.</p>
+
 <pre><code class="r">as.numeric(hair)
 </code></pre>
 
-<pre><code>## [1]  1 NA  3  1
+<pre><code>## [1] 1 2 3 1
 </code></pre>
 
-<p>They are also more memory-efficient than tables of characters.</p>
+<p>A factor variable can be modified, but only by using already-defined levels.</p>
 
-<p>Difficult to concatenate</p>
-
-<pre><code class="r">c(hair, hair)
+<pre><code class="r">hair &lt;- factor(c(&quot;blond&quot;, &quot;brown&quot;, &quot;red&quot;, &quot;blond&quot;))
+hair[2] &lt;- &quot;blond&quot;
+hair
 </code></pre>
 
-<pre><code>## [1]  1 NA  3  1  1 NA  3  1
+<pre><code>## [1] blond blond red   blond
+## Levels: blond brown red
+</code></pre>
+
+<pre><code class="r">hair[2] &lt;- &quot;grey&quot;
+</code></pre>
+
+<pre><code>## Warning: niveau de facteur incorrect, NAs générés
+</code></pre>
+
+<pre><code class="r">hair
+</code></pre>
+
+<pre><code>## [1] blond &lt;NA&gt;  red   blond
+## Levels: blond brown red
+</code></pre>
+
+<p>To add a value: turn a factor to character, add element and turn it to factor again.</p>
+
+<pre><code class="r">hair &lt;- factor(c(&quot;blond&quot;, &quot;brown&quot;, &quot;red&quot;, &quot;blond&quot;))
+hair
+</code></pre>
+
+<pre><code>## [1] blond brown red   blond
+## Levels: blond brown red
+</code></pre>
+
+<pre><code class="r">char_hair &lt;- as.character(hair)
+char_hair[2] &lt;- &quot;grey&quot;
+hair &lt;- factor(char_hair)
+hair
+</code></pre>
+
+<pre><code>## [1] blond grey  red   blond
+## Levels: blond grey red
+</code></pre>
+
+<p>Factor variables are not easy to handle. For instance, they are difficult to concatenate as only the internal numeric coding will be concatenated. As workarounds, one can first turn the factors into character vectors, or alternatively use the list/unlist couple of functions.</p>
+
+<pre><code class="r">hair &lt;- factor(c(&quot;blond&quot;, &quot;brown&quot;, &quot;red&quot;, &quot;blond&quot;))
+c(hair, hair)
+</code></pre>
+
+<pre><code>## [1] 1 2 3 1 1 2 3 1
 </code></pre>
 
 <pre><code class="r"># Workaround 1
@@ -336,21 +537,19 @@ factor(as.character(hair), as.character(hair))
 ## de type &#39;factor&#39;
 </code></pre>
 
-<pre><code>## [1] blond &lt;NA&gt;  red   blond
-## Levels: blond red blond
+<pre><code>## [1] blond brown red   blond
+## Levels: blond brown red blond
 </code></pre>
 
 <pre><code class="r"># Workaround 2
 unlist(list(hair, hair))
 </code></pre>
 
-<pre><code>## [1] blond &lt;NA&gt;  red   blond blond &lt;NA&gt;  red   blond
+<pre><code>## [1] blond brown red   blond blond brown red   blond
 ## Levels: blond brown red
 </code></pre>
 
-<p>To add a value: turn factor to character, add element and turn it to factor again.</p>
-
-<p>Use ordered=TRUE for ordered values.</p>
+<p>Use ordered=TRUE when when factors represent ordered values. This allows meaningful comparisons, otherwise only alphabetical comparison is available.</p>
 
 <pre><code class="r">time &lt;- factor(c(1, 2, 3, 2, 2, 1), levels = c(1, 2, 3), labels = c(&quot;never&quot;, 
     &quot;sometimes&quot;, &quot;always&quot;), ordered = TRUE)
@@ -373,45 +572,22 @@ time
 <pre><code>## [1] FALSE
 </code></pre>
 
-<pre><code class="r">boxplot(measure ~ groups)
-</code></pre>
+<p>Important note:<br/>
+By default, data.frame() and read.table() convert all non-numerical values into factors.<br/>
+Use stringsAsFactors=FALSE or as.is=TRUE to avoid this behavior. It can also be set in defaults by <code>options(stringsAsFactors=FALSE)</code></p>
 
-<pre><code>## Error: objet &#39;measure&#39; introuvable
-</code></pre>
+<hr/>
 
-<pre><code class="r">summary(aov(measure ~ groups))
-</code></pre>
-
-<pre><code>## Error: objet &#39;measure&#39; introuvable
-</code></pre>
-
-<pre><code class="r">groups &lt;- as.factor(groups)
-</code></pre>
-
-<pre><code>## Error: objet &#39;groups&#39; introuvable
-</code></pre>
-
-<pre><code class="r">groups
-</code></pre>
-
-<pre><code>## Error: objet &#39;groups&#39; introuvable
-</code></pre>
-
-<pre><code class="r">summary(aov(measure ~ groups))
-</code></pre>
-
-<pre><code>## Error: objet &#39;measure&#39; introuvable
-</code></pre>
-
-<p>By default, data.frame() and read.table() convert all non-numerical values into factors.
-Use stringsAsFactors=FALSE or as.is=TRUE 
-It can also be set in defaults options(stringsAsFactors=FALSE)</p>
-
-<h2>Other related functions</h2>
+<h2>How to get information of the content/structure of a variable</h2>
 
 <h3>summary()</h3>
 
-<pre><code class="r">summary(mylist)
+<p>This function displays a summary of the variable content.<br/>
+NB: Class:none means that the class is the same as the mode.  </p>
+
+<pre><code class="r">mylist &lt;- list(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), sex = c(&quot;M&quot;, 
+    &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+summary(mylist)
 </code></pre>
 
 <pre><code>##        Length Class  Mode     
@@ -420,20 +596,38 @@ It can also be set in defaults options(stringsAsFactors=FALSE)</p>
 ## sex    4      -none- character
 </code></pre>
 
-<p>Class:none means that the class is the same as the mode.</p>
+<p>When applied to a data frame, it summarizes each column&#39;s content (min, max, median, mean, quartiles).</p>
+
+<pre><code class="r">mydf &lt;- data.frame(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), 
+    sex = c(&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+summary(mydf)
+</code></pre>
+
+<pre><code>##       ages          height    sex  
+##  Min.   :12.0   Min.   :128   F:1  
+##  1st Qu.:28.5   1st Qu.:133   M:3  
+##  Median :34.5   Median :150        
+##  Mean   :35.8   Mean   :148        
+##  3rd Qu.:41.8   3rd Qu.:164        
+##  Max.   :62.0   Max.   :165
+</code></pre>
 
 <h3>str()</h3>
 
-<p><strong>Detailed</strong> information (as detailed as possible) about the structure of a model.</p>
+<p><em>Detailed</em> information (as detailed as possible) about the structure of an object.</p>
 
-<pre><code class="r">str(mylist)
+<pre><code class="r">mydf &lt;- data.frame(ages = c(12, 35, 34, 62), height = c(135, 128, 164, 165), 
+    sex = c(&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+str(mydf)
 </code></pre>
 
-<pre><code>## List of 3
-##  $ ages  : num [1:4] 12 35 34 62
-##  $ height: num [1:4] 135 128 164 165
-##  $ sex   : chr [1:4] &quot;M&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot;
+<pre><code>## &#39;data.frame&#39;:    4 obs. of  3 variables:
+##  $ ages  : num  12 35 34 62
+##  $ height: num  135 128 164 165
+##  $ sex   : Factor w/ 2 levels &quot;F&quot;,&quot;M&quot;: 2 1 2 2
 </code></pre>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

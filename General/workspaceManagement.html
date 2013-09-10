@@ -33,6 +33,10 @@
         
 <h1>Workspace management</h1>
 
+<p>Managing workspace packages.</p>
+
+<hr/>
+
 <h2>Installing a package</h2>
 
 <p>From inside the workspace.</p>
@@ -46,6 +50,17 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 <blockquote>
 <p>R CMD INSTALL knitr</p>
 </blockquote>
+
+<hr/>
+
+<h2>Loading a package</h2>
+
+<p>Load a package, with or without the localisation to be used.</p>
+
+<pre><code class="r">library(&quot;Biobase&quot;, lib.loc = &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;)
+</code></pre>
+
+<hr/>
 
 <h2>List loaded packages</h2>
 
@@ -66,18 +81,19 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 ## [11] LC_MEASUREMENT=fr_CH.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## [1] datasets  stats     graphics  grDevices utils     methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_0.9.3.1 markdown_0.5.4  knitr_1.1      
+## [1] biomaRt_2.14.0  ggplot2_0.9.3.1 markdown_0.5.4  knitr_1.1      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] colorspace_1.2-1   dichromat_2.0-0    digest_0.6.3      
-##  [4] evaluate_0.4.3     formatR_0.7        grid_2.15.2       
+##  [4] evaluate_0.4.7     formatR_0.7        grid_2.15.2       
 ##  [7] gtable_0.1.2       KernSmooth_2.23-9  labeling_0.1      
 ## [10] MASS_7.3-23        munsell_0.4        plyr_1.8          
-## [13] proto_0.3-10       RColorBrewer_1.0-5 reshape2_1.2.2    
-## [16] scales_0.2.3       stringr_0.6.2      tools_2.15.2
+## [13] proto_0.3-10       RColorBrewer_1.0-5 RCurl_1.95-3      
+## [16] reshape2_1.2.2     scales_0.2.3       stringr_0.6.2     
+## [19] tools_2.15.2       XML_3.95-0.1
 </code></pre>
 
 <p>Get the list of all currently loaded packages, and a few information on them.</p>
@@ -86,91 +102,113 @@ Download from CRAN, by ex. <a href="http://cran.r-project.org/web/packages/knitr
 </code></pre>
 
 <pre><code>##           Package     LibPath                                         
+## biomaRt   &quot;biomaRt&quot;   &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## ggplot2   &quot;ggplot2&quot;   &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## markdown  &quot;markdown&quot;  &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
 ## knitr     &quot;knitr&quot;     &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;
+## datasets  &quot;datasets&quot;  &quot;/usr/lib/R/library&quot;                            
 ## stats     &quot;stats&quot;     &quot;/usr/lib/R/library&quot;                            
 ## graphics  &quot;graphics&quot;  &quot;/usr/lib/R/library&quot;                            
 ## grDevices &quot;grDevices&quot; &quot;/usr/lib/R/library&quot;                            
 ## utils     &quot;utils&quot;     &quot;/usr/lib/R/library&quot;                            
-## datasets  &quot;datasets&quot;  &quot;/usr/lib/R/library&quot;                            
 ## methods   &quot;methods&quot;   &quot;/usr/lib/R/library&quot;                            
 ## base      &quot;base&quot;      &quot;/usr/lib/R/library&quot;                            
 ##           Version   Priority Depends                      
+## biomaRt   &quot;2.14.0&quot;  NA       &quot;methods&quot;                    
 ## ggplot2   &quot;0.9.3.1&quot; NA       &quot;R (&gt;= 2.14), stats, methods&quot;
 ## markdown  &quot;0.5.4&quot;   NA       &quot;R (&gt;= 2.11.1)&quot;              
 ## knitr     &quot;1.1&quot;     NA       &quot;R (&gt;= 2.14.1)&quot;              
+## datasets  &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## stats     &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## graphics  &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## grDevices &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## utils     &quot;2.15.2&quot;  &quot;base&quot;   NA                           
-## datasets  &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## methods   &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ## base      &quot;2.15.2&quot;  &quot;base&quot;   NA                           
 ##           Imports                                                                                       
+## biomaRt   &quot;utils, XML, RCurl&quot;                                                                           
 ## ggplot2   &quot;plyr (&gt;= 1.7.1), digest, grid, gtable (&gt;= 0.1.1), reshape2,\nscales (&gt;= 0.2.3), proto, MASS&quot; 
 ## markdown  NA                                                                                            
 ## knitr     &quot;evaluate (&gt;= 0.4.3), digest, formatR (&gt;= 0.3-4), markdown (&gt;=\n0.4), stringr (&gt;= 0.6), tools&quot;
+## datasets  NA                                                                                            
 ## stats     NA                                                                                            
 ## graphics  &quot;grDevices&quot;                                                                                   
 ## grDevices NA                                                                                            
 ## utils     NA                                                                                            
-## datasets  NA                                                                                            
 ## methods   &quot;utils&quot;                                                                                       
 ## base      NA                                                                                            
 ##           LinkingTo
+## biomaRt   NA       
 ## ggplot2   NA       
 ## markdown  NA       
 ## knitr     NA       
+## datasets  NA       
 ## stats     NA       
 ## graphics  NA       
 ## grDevices NA       
 ## utils     NA       
-## datasets  NA       
 ## methods   NA       
 ## base      NA       
 ##           Suggests                                                                     
+## biomaRt   &quot;annotate&quot;                                                                   
 ## ggplot2   &quot;quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,\nnlme, testthat&quot;
 ## markdown  &quot;RCurl&quot;                                                                      
 ## knitr     &quot;testthat, rgl, codetools, R2SWF (&gt;= 0.4), XML, RCurl, Rcpp\n(&gt;= 0.10.0)&quot;    
+## datasets  NA                                                                           
 ## stats     NA                                                                           
 ## graphics  NA                                                                           
 ## grDevices NA                                                                           
 ## utils     NA                                                                           
-## datasets  NA                                                                           
 ## methods   NA                                                                           
 ## base      NA                                                                           
 ##           Enhances OS_type License            Built   
+## biomaRt   NA       NA      &quot;Artistic-2.0&quot;     &quot;2.15.2&quot;
 ## ggplot2   &quot;sp&quot;     NA      &quot;GPL-2&quot;            &quot;2.15.2&quot;
 ## markdown  NA       NA      &quot;GPL-3&quot;            &quot;2.15.2&quot;
 ## knitr     NA       NA      &quot;GPL&quot;              &quot;2.15.2&quot;
+## datasets  NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## stats     NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## graphics  NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## grDevices NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## utils     NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
-## datasets  NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## methods   NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 ## base      NA       NA      &quot;Part of R 2.15.2&quot; &quot;2.15.2&quot;
 </code></pre>
 
-<h2>Load/detach a package</h2>
+<hr/>
 
-<pre><code class="r">## Detach a package
-detach(&quot;package:affy&quot;, unload = TRUE)
+<h2>Save/Load</h2>
 
-## Load a package
-library(&quot;Biobase&quot;, lib.loc = &quot;/home/chernan/R/i686-pc-linux-gnu-library/2.15&quot;)
+<p>Save the list of loaded packages in a file, and load packages from this file.</p>
 
-## Write the list in a file
-instPackages &lt;- installed.packages()[.packages(), ]
+<ul>
+<li>Write the list of loaded packages in a file</li>
+</ul>
+
+<pre><code class="r">instPackages &lt;- installed.packages()[.packages(), ]
 write.table(instPackages, &quot;loadedPackages.txt&quot;, quote = TRUE)
+</code></pre>
 
-## Load packages from a file
-packagesToLoad &lt;- read.table(&quot;loadedPackages.txt&quot;, header = TRUE, stringsAsFactors = FALSE)
+<ul>
+<li>Load packages from a file</li>
+</ul>
+
+<pre><code class="r">packagesToLoad &lt;- read.table(&quot;loadedPackages.txt&quot;, header = TRUE, stringsAsFactors = FALSE)
 apply(packagesToLoad, 1, FUN = function(aLib) {
     library(package = aLib[&quot;Package&quot;], lib.loc = aLib[&quot;LibPath&quot;], character.only = TRUE)
 })
 </code></pre>
+
+<hr/>
+
+<h2>Detach a package</h2>
+
+<p>Detach a package</p>
+
+<pre><code class="r">detach(&quot;package:affy&quot;, unload = TRUE)
+</code></pre>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

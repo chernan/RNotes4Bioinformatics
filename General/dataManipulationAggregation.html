@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../stylesheets/pygment_trac.css"/>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="../javascripts/script.js"></script>
-  <title>Data manipulation/aggregation</title>
+  <title>Data manipulation : aggregation, merge and format changes</title>
 </head>
 
 <body>
@@ -31,41 +31,211 @@
         </div>
         <article class="markdown-body">
         
-<h1>Data manipulation/aggregation</h1>
+<h1>Data manipulation : aggregation, merge and format changes</h1>
 
-<h2>Contingency table</h2>
+<p>This page describes how to apply functions on each line/column of a data frame, or on lines grouped in subsets using another variable.
+It will also show how to create a contingency table, and how to change from long to wide format, and reversely.</p>
 
-<p>table()</p>
+<ol>
+<li>Apply a function on a list/data.frame (apply, lapply, sapply)</li>
+<li>Aggregation (tapply, aggregate, by)</li>
+<li>Merge</li>
+<li>Split</li>
+<li>Contingency table</li>
+<li>Wide and long formats</li>
+</ol>
 
-<h2>&ldquo;Apply&rdquo; family</h2>
+<hr/>
+
+<h2>Apply a function on a list/data.frame</h2>
+
+<p>The &ldquo;apply&rdquo; family of functions is useful when applying the same code on each element/line of a vector, list, data.frame etc. Each of the function can be applied on a list (or data frame) but returns results in a different format.</p>
 
 <h3>apply()</h3>
 
-<p>MAR=1 to loop on rows
-MAR=2 to loop on columns</p>
+<p>The most generic function.<br/>
+Use it to apply another function on each column/row of a data frame.<br/>
+The function to be applied can be already defined, or defined on-the-fly.<br/>
+Supplementary parameters can be transmitted to already defined functions.  </p>
 
-<p>Other specialized function are often more efficient, like rowSums(matrix).</p>
+<ul>
+<li>Use MAR=1 to loop on rows</li>
+<li>Use MAR=2 to loop on columns</li>
+</ul>
+
+<pre><code class="r">mydf &lt;- data.frame(m0sd1 = rnorm(200, mean = 0, sd = 1), m0sd10 = rnorm(200, 
+    mean = 0, sd = 10), m0sd.1 = rnorm(200, mean = 0, sd = 0.1), m1.5sd1 = rnorm(200, 
+    mean = 1.5, sd = 1), m0sd5 = rnorm(200, mean = 0, sd = 5))
+## Already defined function
+apply(mydf, MARGIN = 2, mean)
+</code></pre>
+
+<pre><code>##     m0sd1    m0sd10    m0sd.1   m1.5sd1     m0sd5 
+## -0.059248  0.641841  0.006092  1.662241  0.457147
+</code></pre>
+
+<pre><code class="r">## Equivalent to mean(column, trim=0.1)
+apply(mydf, MARGIN = 2, mean, trim = 0.1)
+</code></pre>
+
+<pre><code>##     m0sd1    m0sd10    m0sd.1   m1.5sd1     m0sd5 
+## -0.047388  0.699333  0.008574  1.673356  0.480492
+</code></pre>
+
+<pre><code class="r">## Function defined on-the-fly
+apply(mydf, MARGIN = 2, FUN = function(column) {
+    return(c(mean(column), median(column)))
+})
+</code></pre>
+
+<pre><code>##         m0sd1  m0sd10   m0sd.1 m1.5sd1  m0sd5
+## [1,] -0.05925 0.64184 0.006092   1.662 0.4571
+## [2,] -0.02901 0.09039 0.008551   1.653 0.6613
+</code></pre>
+
+<p>NB: When the function to be applied is simple, other specialized function are often more efficient, like rowSums(matrix) or rowMeans(matrix).</p>
 
 <h3>lapply()</h3>
 
-<p>to apply on the elements of a list</p>
+<p>Use it to apply a function on the elements of a list. It can be interesting to use <code>as.data.frame</code> on the result to get it in a more handy format. A better approach is to directly use <code>sapply()</code>.</p>
+
+<pre><code class="r">mylist &lt;- list(m0sd1 = rnorm(200, mean = 0, sd = 1), m0sd10 = rnorm(2000, mean = 0, 
+    sd = 10), m0sd.1 = rnorm(20, mean = 0, sd = 0.1), m1.5sd1 = rnorm(200, mean = 1.5, 
+    sd = 1), m0sd5 = rnorm(200, mean = 0, sd = 5))
+result &lt;- lapply(mylist, FUN = function(x) {
+    return(c(mean = mean(x), median = median(x)))
+})
+result
+</code></pre>
+
+<pre><code>## $m0sd1
+##     mean   median 
+## -0.07216 -0.15783 
+## 
+## $m0sd10
+##    mean  median 
+## -0.2937 -0.2853 
+## 
+## $m0sd.1
+##    mean  median 
+## 0.01812 0.00932 
+## 
+## $m1.5sd1
+##   mean median 
+##  1.537  1.475 
+## 
+## $m0sd5
+##    mean  median 
+## -0.1611 -0.3490
+</code></pre>
+
+<pre><code class="r">as.data.frame(result)
+</code></pre>
+
+<pre><code>##           m0sd1  m0sd10  m0sd.1 m1.5sd1   m0sd5
+## mean   -0.07216 -0.2937 0.01812   1.537 -0.1611
+## median -0.15783 -0.2853 0.00932   1.475 -0.3490
+</code></pre>
 
 <h3>sapply()</h3>
 
-<p>to apply on the elements of a list and simplify the result to a vector if possible.</p>
+<p>Use it to apply on the elements of a list and simplify the result to a vector or a matrix, if possible.</p>
 
-<h3>tapply(data, factorForGroups, FUN)</h3>
+<pre><code class="r">mylist &lt;- list(m0sd1 = rnorm(200, mean = 0, sd = 1), m0sd10 = rnorm(2000, mean = 0, 
+    sd = 10), m0sd.1 = rnorm(20, mean = 0, sd = 0.1), m1.5sd1 = rnorm(200, mean = 1.5, 
+    sd = 1), m0sd5 = rnorm(200, mean = 0, sd = 5))
+sapply(mylist, FUN = function(col) {
+    return(c(mean(col), median(col)))
+})
+</code></pre>
 
-<p>apply a function FUN on a matrix after aggregating data using a factor. Or one can use split(data[, &ldquo;height&rdquo;], data[ ,&ldquo;sex&rdquo;])</p>
+<pre><code>##         m0sd1   m0sd10     m0sd.1 m1.5sd1   m0sd5
+## [1,] -0.05533 -0.04112 -0.0062452   1.325 -0.3524
+## [2,] -0.11246  0.14949  0.0005626   1.289 -0.3461
+</code></pre>
 
-<h2>Aggregate</h2>
+<hr/>
 
-<p>aggregate(x, by, FUN) data.frame/<strong>list</strong>/function, works in a similar way to tapply() but:</p>
+<h2>Aggregation</h2>
+
+<h3>tapply()</h3>
+
+<blockquote>
+<p>Usage : tapply(data, factorForGroups, FUN)</p>
+</blockquote>
+
+<p>Use it to apply a function FUN on a <em>vector</em>, after aggregating the values using a factor. </p>
+
+<pre><code class="r">mydf &lt;- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 
+    172, 168, 173), sex = c(&quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+tapply(mydf$age, INDEX = mydf$sex, FUN = mean)
+</code></pre>
+
+<pre><code>##     F     M 
+## 28.67 64.00
+</code></pre>
+
+<p>On a <em>data frame</em>, one can use split to generate a list and combine it with lapply() or mapply().</p>
+
+<pre><code class="r">mydf &lt;- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 
+    172, 168, 173), sex = c(&quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+split(mydf, mydf$sex)
+</code></pre>
+
+<pre><code>## $F
+##   age height sex
+## 1  19    157   F
+## 2  36    167   F
+## 4  31    172   F
+## 
+## $M
+##   age height sex
+## 3  63    182   M
+## 5  43    168   M
+## 6  86    173   M
+</code></pre>
+
+<pre><code class="r">lapply(split(mydf[, c(&quot;age&quot;, &quot;height&quot;)], mydf$sex), FUN = colMeans)
+</code></pre>
+
+<pre><code>## $F
+##    age height 
+##  28.67 165.33 
+## 
+## $M
+##    age height 
+##   64.0  174.3
+</code></pre>
+
+<h3>aggregate</h3>
+
+<p>aggregate(x, by, FUN) </p>
+
+<p>Works similarly to tapply() but:</p>
 
 <ul>
-<li>works on whole data.frame (multiple columns</li>
+<li>on a whole data.frame (multiple columns)</li>
+<li>the &#39;by&#39; argument must be a list</li>
 <li><strong>only produces scalar summaries</strong></li>
 </ul>
+
+<pre><code class="r">mydf &lt;- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 
+    172, 168, 173), sex = c(&quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+aggregate(mydf[, 1:2], mydf[&quot;sex&quot;], mean)
+</code></pre>
+
+<pre><code>##   sex   age height
+## 1   F 28.67  165.3
+## 2   M 64.00  174.3
+</code></pre>
+
+<pre><code class="r">aggregate(mydf[, 1:2], mydf[&quot;sex&quot;], paste0)
+</code></pre>
+
+<pre><code>##   sex age.1 age.2 age.3 height.1 height.2 height.3
+## 1   F    19    36    31      157      167      172
+## 2   M    63    43    86      182      168      173
+</code></pre>
 
 <pre><code class="r">data(iris)
 head(iris, 3)
@@ -77,7 +247,9 @@ head(iris, 3)
 ## 3          4.7         3.2          1.3         0.2  setosa
 </code></pre>
 
-<pre><code class="r">aggregate(iris[, 1:4], iris[5], FUN = mean)
+<pre><code class="r">## Note that iris[&#39;Species&#39;] is a list (as iris[5]), instead of
+## iris$Species which is a vector (as iris[,5])
+aggregate(iris[, 1:4], iris[&quot;Species&quot;], FUN = mean)
 </code></pre>
 
 <pre><code>##      Species Sepal.Length Sepal.Width Petal.Length Petal.Width
@@ -86,18 +258,64 @@ head(iris, 3)
 ## 3  virginica        6.588       2.974        5.552       2.026
 </code></pre>
 
-<pre><code class="r">## Note that iris[5] is a list (as iris[&#39;Species&#39;]), instead of iris[,5]
-## which is a vector (as iris$Species)
+<h3>by</h3>
+
+<p>This function is similar to tapply, but more general as it applies to data frames.<br/>
+It first splits the input into multiple data frames and applies the function FUN on each sub-data frame.  </p>
+
+<pre><code class="r">mydf &lt;- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 
+    172, 168, 173), sex = c(&quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+by(mydf[, 1:2], INDICES = mydf$sex, FUN = colMeans)
 </code></pre>
+
+<pre><code>## mydf$sex: F
+##    age height 
+##  28.67 165.33 
+## -------------------------------------------------------- 
+## mydf$sex: M
+##    age height 
+##   64.0  174.3
+</code></pre>
+
+<pre><code class="r">mydf &lt;- data.frame(age = c(19, 36, 63, 31, 43, 86), height = c(157, 167, 182, 
+    172, 168, 173), sex = c(&quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;))
+by(mydf[, 1:2], INDICES = mydf$sex, FUN = function(df) {
+    apply(df, 2, summary)
+})
+</code></pre>
+
+<pre><code>## mydf$sex: F
+##          age height
+## Min.    19.0    157
+## 1st Qu. 25.0    162
+## Median  31.0    167
+## Mean    28.7    165
+## 3rd Qu. 33.5    170
+## Max.    36.0    172
+## -------------------------------------------------------- 
+## mydf$sex: M
+##          age height
+## Min.    43.0    168
+## 1st Qu. 53.0    170
+## Median  63.0    173
+## Mean    64.0    174
+## 3rd Qu. 74.5    178
+## Max.    86.0    182
+</code></pre>
+
+<hr/>
 
 <h2>Merge</h2>
 
-<h3>merge()</h3>
+<h3>merge</h3>
 
-<p>Merge two data frames, by column or by row. By default the function finds all common column names and use them all.
-Interesting parameters include :
-&#39;by&#39; (by.x, by.y) to specify common columns to use for the merge
-&#39;all&#39; (all.x, all.x) to specify if all lines should be kept (even the ones without correspondance in the other data frame). </p>
+<p>Merge two data frames, by column or by row. By default the function finds all common column names and use them all.<br/>
+Interesting parameters include :</p>
+
+<ul>
+<li>&#39;by&#39; (by.x, by.y) to specify common columns to use for the merge</li>
+<li>&#39;all&#39; (all.x, all.y) to specify if all lines should be kept (even the ones without correspondance in the other data frame). </li>
+</ul>
 
 <pre><code class="r">x &lt;- data.frame(index = c(2, 3, 1), fruit = c(&quot;orange&quot;, &quot;lemon&quot;, &quot;grapefruit&quot;))
 y &lt;- data.frame(index = c(3, 1, 2, 1), quantity = c(13, 6, 3, 5))
@@ -113,22 +331,106 @@ merge(x, y)
 
 <p>A good practice is to specify each time by which column you want to merge for x and y.</p>
 
-<h3>union/intersect/setdiff/setequal</h3>
+<h3>Union (Set operations)</h3>
 
-<h3>match(newlist, reflist)</h3>
+<p>Intersetcion between values of two sets (vectors). Any duplicated value is discarded.</p>
 
-<p>a general way for finding common values</p>
+<pre><code class="r">set.seed(0)
+x &lt;- trunc(runif(10, min = 0, max = 100), 0)
+y &lt;- trunc(runif(10, min = 0, max = 100), 0)
+x
+</code></pre>
 
-<h2>Split data according to groups information</h2>
+<pre><code>##  [1] 89 26 37 57 90 20 89 94 66 62
+</code></pre>
 
-<p>split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.</p>
+<pre><code class="r">y
+</code></pre>
 
-<h2>From wide to long format</h2>
+<pre><code>##  [1]  6 20 17 68 38 76 49 71 99 38
+</code></pre>
 
-<p>stack() transforms a matrix with headers (wide format), into one 2-columns data-frame with measurements/labels (long format).
-Correlation need wide format, modeling need long format.</p>
+<pre><code class="r">union(x, y)
+</code></pre>
+
+<pre><code>##  [1] 89 26 37 57 90 20 94 66 62  6 17 68 38 76 49 71 99
+</code></pre>
+
+<p>Other set operations are also possible. </p>
+
+<ul>
+<li>Intersection with intersect(x, y)</li>
+<li>Difference (which ones of x are not in y) with setdiff(x,y). is.element() returns boolean values, as well as %in%.</li>
+</ul>
+
+<p>match(x, reflist) 
+is a more general way to find which values of a new list x are in a reference list (and at which position).</p>
+
+<hr/>
+
+<h2>Split</h2>
+
+<p>split() splits a vector (or rows of a data frame) into separate elements of a list, ready for further processing.<br/>
+See tapply().</p>
+
+<hr/>
+
+<h2>Contingency table</h2>
+
+<p>A contingency table counts the combinations of two factors. To create a contingency table, use the <code>table()</code> function.</p>
+
+<pre><code class="r">x &lt;- data.frame(fruit = c(&quot;orange&quot;, &quot;lemon&quot;, &quot;lemon&quot;, &quot;grapefruit&quot;, &quot;grapefruit&quot;, 
+    &quot;orange&quot;, &quot;lemon&quot;), country = c(&quot;Spain&quot;, &quot;Spain&quot;, &quot;California&quot;, &quot;California&quot;, 
+    &quot;Spain&quot;, &quot;Spain&quot;, &quot;California&quot;))
+table(x)
+</code></pre>
+
+<pre><code>##             country
+## fruit        California Spain
+##   grapefruit          1     1
+##   lemon               2     1
+##   orange              0     2
+</code></pre>
+
+<hr/>
+
+<h2>Wide and long formats</h2>
+
+<p>stack() transforms a matrix with headers (wide format), into one 2-columns data-frame with measurements/labels (long format).</p>
+
+<pre><code class="r">mydf &lt;- data.frame(x = trunc(runif(10, min = 0, max = 100), 0), y = round(runif(10, 
+    min = 0, max = 1), 1))
+stack(mydf)
+</code></pre>
+
+<pre><code>##    values ind
+## 1    77.0   x
+## 2    93.0   x
+## 3    21.0   x
+## 4    65.0   x
+## 5    12.0   x
+## 6    26.0   x
+## 7    38.0   x
+## 8     1.0   x
+## 9    38.0   x
+## 10   86.0   x
+## 11    0.3   y
+## 12    0.5   y
+## 13    0.6   y
+## 14    0.5   y
+## 15    0.2   y
+## 16    0.8   y
+## 17    0.7   y
+## 18    0.8   y
+## 19    0.1   y
+## 20    0.7   y
+</code></pre>
+
+<p>Correlation need wide format, modeling need long format.</p>
 
 <p>reshape() has more possibilities, and is consequently more complex.</p>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 

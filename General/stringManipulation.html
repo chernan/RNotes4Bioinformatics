@@ -33,9 +33,19 @@
         
 <h1>String manipulation</h1>
 
+<p>See also Factors in &ldquo;Data structures&rdquo; chapter.</p>
+
+<ol>
+<li>Concatenate</li>
+<li>Split</li>
+<li>Regular expressions (grepl, grep, sub)</li>
+</ol>
+
+<hr/>
+
 <h2>Concatenate</h2>
 
-<p>paste a set of character strings, and can do replication in strings.</p>
+<p>paste and paste0 concatenate a set of character strings. They can also do replication in strings.</p>
 
 <pre><code class="r">paste(&quot;Chr&quot;, c(1:22, &quot;X&quot;, &quot;Y&quot;), sep = &quot;&quot;)
 </code></pre>
@@ -45,29 +55,46 @@
 ## [17] &quot;Chr17&quot; &quot;Chr18&quot; &quot;Chr19&quot; &quot;Chr20&quot; &quot;Chr21&quot; &quot;Chr22&quot; &quot;ChrX&quot;  &quot;ChrY&quot;
 </code></pre>
 
+<pre><code class="r">paste0(&quot;Chr&quot;, c(1:22, &quot;X&quot;, &quot;Y&quot;))
+</code></pre>
+
+<pre><code>##  [1] &quot;Chr1&quot;  &quot;Chr2&quot;  &quot;Chr3&quot;  &quot;Chr4&quot;  &quot;Chr5&quot;  &quot;Chr6&quot;  &quot;Chr7&quot;  &quot;Chr8&quot; 
+##  [9] &quot;Chr9&quot;  &quot;Chr10&quot; &quot;Chr11&quot; &quot;Chr12&quot; &quot;Chr13&quot; &quot;Chr14&quot; &quot;Chr15&quot; &quot;Chr16&quot;
+## [17] &quot;Chr17&quot; &quot;Chr18&quot; &quot;Chr19&quot; &quot;Chr20&quot; &quot;Chr21&quot; &quot;Chr22&quot; &quot;ChrX&quot;  &quot;ChrY&quot;
+</code></pre>
+
+<hr/>
+
 <h2>Split</h2>
 
-<p>strsplit(vector, separator)</p>
+<p>Spliting characters is done by the strsplit function.<br/>
+Using the empty string as separator separates all characters.</p>
 
-<p>strsplit on the empty string separates all characters.</p>
-
-<pre><code class="r">sequence &lt;- &quot;ATTGCCTGGATT&quot;
-strsplit(sequence, &quot;&quot;)
+<pre><code class="r">strsplit(&quot;ATTGCCTGGATT&quot;, &quot;&quot;)
 </code></pre>
 
 <pre><code>## [[1]]
 ##  [1] &quot;A&quot; &quot;T&quot; &quot;T&quot; &quot;G&quot; &quot;C&quot; &quot;C&quot; &quot;T&quot; &quot;G&quot; &quot;G&quot; &quot;A&quot; &quot;T&quot; &quot;T&quot;
 </code></pre>
 
+<hr/>
+
 <h2>Regular expressions</h2>
 
-<p>grep() find if a string contains a given pattern (see also regexpr())</p>
+<p>Regular expressions can be applied on character strings.<br/>
+grepl() finds if a string contains a given pattern using or not the Perl syntax (see also regexpr()).</p>
 
-<p>sub() find a pattern and replace it (see also ). If it can&#39;t replace anything in a string, the full string is itself returned.</p>
+<pre><code class="r">multi_strings &lt;- c(&quot;Giraf&quot;, &quot;Cow&quot;, &quot;Frog&quot;, &quot;Panda&quot;)
+grepl(pattern = &quot;^F&quot;, x = multi_strings, perl = TRUE)
+</code></pre>
 
-<h2>See also</h2>
+<pre><code>## [1] FALSE FALSE  TRUE FALSE
+</code></pre>
 
-<p>See also factors in &ldquo;Data structures&rdquo; chapter.</p>
+<p>grep() returns the index of the matching strings, if any.
+sub() find a pattern and replace it. If it can&#39;t replace anything in a string, the full string is itself returned.</p>
+
+<hr/>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 
