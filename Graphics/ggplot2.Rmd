@@ -1,6 +1,8 @@
 R graphics : ggplot2
 ================================================================================
 
+--------------------------------------------------------------------------------
+
 Introduction
 --------------------------------------------------------------------------------
 
@@ -22,6 +24,10 @@ Components:
 
 The official website with code examples and documentation is http://ggplot2.org
 
+See also : [Ggplot2 "How to"](ggplot2_howtos.html)
+
+--------------------------------------------------------------------------------
+
 Installation
 --------------------------------------------------------------------------------
 
@@ -29,14 +35,14 @@ Installation
 install.packages("ggplot2")
 ```
 
-The full source code of ggplot2 is also on GitHub.
-https://github.com/hadley/ggplot2
+Development version of the source code is also [on GitHub](https://github.com/hadley/ggplot2).
 
-Functions
+
 --------------------------------------------------------------------------------
 
+Qplot() function
+--------------------------------------------------------------------------------
 
-### qplot
 
 The equivalent of the general purpose plot() base function.
 
@@ -65,5 +71,6 @@ qplot(x=Sepal.Length, y=Petal.Length, data=iris, geom=c("smooth","point"), facet
 qplot(x=Species, y=Petal.Length, data=iris, geom=c("boxplot", "jitter"), colour=Species)
 ```
 
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
