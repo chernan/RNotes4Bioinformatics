@@ -1,11 +1,21 @@
 R graphics : base graphics
 ================================================================================
 
+1. Introduction
+2. Plot types
+3. Focus on the plot() function
+4. Inside a plot object
+5. Customizing plots
+6. Interactivity
+7. Combining plots
+8. Exporting plots to files
+
+--------------------------------------------------------------------------------
+
 Introduction
 --------------------------------------------------------------------------------
 
-Uses an incremental approach, where the different elements of a graph can be added and drawn one after the other.
-One can draw elements one after another but not remove of change elements.
+The 'base' graphic system uses an incremental approach, where the different elements of a graph can be added and drawn on top of each other. One can draw elements one after another but not remove or change elements.  
 It follows a simple model, where there is no internal representation of the graphics, apart from the actual drawing.
 
 
@@ -16,63 +26,97 @@ y <- 2*x + 0.50 + rnorm(length(x))/5
 groups <- ifelse( y<1, 1, 2)
 
 par(las=1)
-plot(x, y, col=c("red", "blue")[groups], pch=c(1, 2)[groups])
+plot(x, y, col=c("red", "blue")[groups], pch=c(1, 2)[groups],
+     xlab="X values", ylab="Y values")
 abline(lm(y~x))
 abline(h=1, lty=2)
 rug(x)
 rug(y, side=2)
 text(0, 2, paste("Correlation = ", round(cor(x,y), 2)), pos=4)
-legend(x="topleft", legend=c("Group 1", "Group 2"),
-       fill=c("red", "blue"))
+legend(x="top", legend=c("Y < 1", "Y > 1"), pch=c(1, 2),
+       col=c("red", "blue"))
 ```
 
-Accessing the content of a plot object
+See this page for a more complete overview of all the possibilities offered by R 'base' : [R Graphics
+by Paul Murrell](https://www.stat.auckland.ac.nz/~paul/RG2e/).
+
 --------------------------------------------------------------------------------
 
-If plots are not displayed, the plotting function returns textual information about the graph. In the case of barplot, it'll be the X central position of the bars. 
+Plot types
+--------------------------------------------------------------------------------
 
-```{r}
-data<- runif(10)
-barplot(data)
-axis(side=1, at=barplot(data, plot=FALSE))
+Many plot types exist.
 
-barplot(data, plot=FALSE)
-```
-
-Plot objects can be stored in variables just like any other object. They are effectively returned by the function calls, but as invisible objects (if not used, printed, stored, they are not visible in the workspace).
-```{r}
+```{r, echo=2:8}
+layout(matrix(c(1, 2, 3, 4), ncol=2, byrow=TRUE))
+set.seed(1)
 x <- runif(50)
-y <- runif(50)
-bp <- boxplot(x,y,names=c("a","b"))
-bp
+y <- 2*x + 0.50 + rnorm(length(x))/5
+plot(x, main="1D Scatterplot")
+plot(x, y, main="2D Scatterplot")
+boxplot(x, main="Boxplot")
+hist(x, breaks=10, main="Histogram")
+layout(c(1))
 ```
 
 
-The plot() function
+
 --------------------------------------------------------------------------------
 
-### Different types of plots
+Focus on the plot() function
+--------------------------------------------------------------------------------
 
-```{r}
-y <- rnorm(20)
-plot(y, type="p")
-plot(y, type="l")
-plot(y, type="b")
-plot(y, type="h")
+### Different types of drawing
+
+Point display can change by using different values for parameter 'type'.
+
+```{r, echo=2:7}
+layout(matrix(c(1, 2, 3, 4), ncol=2, byrow=TRUE))
+set.seed(1)
+x <- rnorm(100, mean=0, sd=1.5)
+plot(x, type="p", main="type = p")
+plot(x, type="l", main="type = l")
+plot(x, type="b", main="type = b")
+plot(x, type="h", main="type = h")
+layout(c(1))
 ```
+
+### High density scatter plots
+
+One can use non-filled point characters, act on the alpha value color points (transparency), or use smoothScatters().
+
+```{r, warning=FALSE, fig.height=5, fig.width=9}
+a <- rnorm(10000)
+b <- rnorm(10000)
+oldpar <- par()
+par(mfrow=c(1, 3))
+plot(a, b)
+plot(a, b, col="#00880022", pch=16)
+smoothScatter(a, b)
+##Generates warnings (some parameters can't be edited)
+par(oldpar)
+```
+
+
+### Adaptability of plot()
 
 plot is an S3 function. It can adapt to the object provided if there is a corresponding function.
 
 Example of the plot.lm function generating multiple plots:
-```{r}
+
+```{r, echo=2:5}
+layout(matrix(c(1, 2, 3, 4), ncol=2, byrow=TRUE))
+set.seed(1)
 x <- runif(50)
 y <- 2*x + 0.50 + rnorm(length(x))/5
 plot(lm(y~x))
+layout(c(1))
 ```
 
-If more than 2 columns are provided, multiple scatterplots are displayed.
+If more than 2 data columns are provided, multiple scatterplots are automatically displayed by plot().
 
 ```{r}
+set.seed(1)
 x <- runif(50)
 y <- 2*x + 0.50 + rnorm(length(x))/5
 z <- 1.33*x - 0.25 + rnorm(length(x))/6
@@ -80,13 +124,40 @@ plot(data.frame(x,y,z))
 ```
 
 
+--------------------------------------------------------------------------------
+
+Inside a plot object
+--------------------------------------------------------------------------------
+
+If plots are not displayed, the plotting function returns textual information about the graph. In the case of barplot, it'll be the X central position of the bars. 
+
+```{r}
+set.seed(1)
+data<- runif(10)
+barplot(data)
+axis(side=1, at=barplot(data, plot=FALSE))
+barplot(data, plot=FALSE)
+```
+
+Plot objects can be stored in variables just like any other object. They are effectively returned by the function calls, but as invisible objects (if not used, printed, stored, they are not visible in the workspace).
+```{r}
+set.seed(1)
+x <- runif(50)
+y <- runif(50)
+bp <- boxplot(x,y,names=c("a","b"))
+bp
+```
+
+
+--------------------------------------------------------------------------------
+
 Customizing plots
 --------------------------------------------------------------------------------
 
-Graphics functions are the R functions with the most parameters...
+Graphics functions are the R functions with the most parameters... Help on all functions as well as the list of all possible parameters can be accessed by the usual R help system.  
 
-```{r}
-?barplot
+```{r, eval=FALSE}
+?plot
 ```
 
 
@@ -102,17 +173,20 @@ Character extension, to increase/decrease text size. Different sub parameters al
 
 ### col
 
-Colors used to display graph elements, black by default. 
+Colors used to display graph elements, black being the default color. 
 
-```{r}
+```{r, fig.height=5}
+set.seed(1)
 a <- rnorm(10000)
 b <- rnorm(10000)
 plot(a, b)
 plot(a, b, pch=16, col="blue")
 ```
 
-One can also give a vector of colors.
-```{r}
+One can also provide a vector of colors. If the number of colors is not sufficient for the data length, colors will be recycled.
+
+```{r, fig.height=5}
+set.seed(1)
 a <- rnorm(10000)
 b <- rnorm(10000)
 myColors <- ifelse((a>0 & b>0), "red", "blue")
@@ -120,8 +194,25 @@ myColors[b < -2] <- "green"
 plot(a, b, pch=16, col=myColors)
 ```
 
+It can be useful to set the graph's frame color to light gray, so that it's less visible than the points themselves, or more generally, to change the background color.
+* To remove the plot border : bty="n"
+* To change background/border color : plot, add a rectangle around the plot frame, and draw the points.  
 
-It can be useful to set the graph's frame color to light gray, so that it's less visible than the points themselves.
+```{r, fig.height=5}
+set.seed(1)
+a <- rnorm(10000)
+b <- rnorm(10000)
+myColors <- ifelse((a>0 & b>0), "red", "blue")
+myColors[b < -2] <- "green"
+plot(x=NULL, bty="n", xlab="Index", ylab="X values", xlim=c(-4,4), ylim=c(-4,4))
+rect(xleft=par("usr")[1], ybottom=par("usr")[3], 
+     xright=par("usr")[2], ytop=par("usr")[4], 
+     col = "white", border="gray")
+rect(xleft=par("usr")[1]+0.1, ybottom=par("usr")[3]+0.1, 
+     xright=par("usr")[2]-0.1, ytop=par("usr")[4]-0.1, 
+     col = "#E9ECF7", border="white")
+points(a, b, pch=16, col=myColors, xlim=c(-4,4), ylim=c(-4,4))
+```
 
 
 ### lab
@@ -138,25 +229,29 @@ Sets the margins or outer margins around the plot in the c(bottom, left, top, ri
 
 Character used for each point. By default, an empty circle.
 
-```{r}
+```{r, echo=2:5, fig.height=5}
+layout(matrix(c(1, 2), ncol=2, byrow=TRUE))
 a <- rnorm(10000)
 b <- rnorm(10000)
 plot(a, b)
 plot(a, b, pch=16)
+layout(c(1))
 ```
 
 
-### Other par()
+### Other parameters
 
-- par("usr") get the actual size of a panel
+* par("usr") get the actual size of a panel
 
+
+--------------------------------------------------------------------------------
 
 Interactivity
 --------------------------------------------------------------------------------
 
 **identify()** allows manual selection of a set of points.
 
-```{r}
+```{r, eval=FALSE}
 x <- runif(50)
 y <- runif(50)
 plot(x,y)
@@ -168,24 +263,12 @@ selectedElements
 
 **locator()** returns position of mouse clicks in the plot's coordinate system.
 
-See also package Shiny.
 
-### High density scatter plots
+See also [package Shiny](http://www.rstudio.com/shiny/).
 
-You can act on the alpha value of colors (transparency), or use smoothScatters().
 
-```{r, warning=FALSE}
-a <- rnorm(10000)
-b <- rnorm(10000)
-oldpar <- par()
-par(mfrow=c(1, 3))
-plot(a, b)
-plot(a, b, col="#0000ff22", pch=16)
-smoothScatter(a, b)
-##Generates warnings (some parameters can't be edited)
-par(oldpar)
-```
 
+--------------------------------------------------------------------------------
 
 Combining plots
 --------------------------------------------------------------------------------
@@ -195,8 +278,8 @@ Combining plots
 ```{r}
 set.seed(1)
 data <- rnorm(100)
-hist(data, main="", xlim=c(-3, 3), probability=TRUE)
-lines(density(data))
+hist(data, main="", xlim=c(-3, 3), probability=TRUE, col="darkred")
+lines(density(data), col="blue", lwd=2)
 ```
 
 ### Laying out multiple plots side by side
@@ -206,41 +289,64 @@ lines(density(data))
 #### par(mfrow=c(x,y))
 
 par(mfrow=c(x,y)) or par(mfcol=c(x,y)) fill by row (then columns) or by column (then by row).
-Example the pairs() command.
+
+```{r, warning=FALSE, fig.height=5}
+oldpar <- par()
+par(mfrow=c(1, 3))
+set.seed(1)
+data <- rnorm(100)
+hist(data, main="", col="darkgreen", xlim=c(-3, -1))
+hist(data, main="", col="gray", xlim=c(-1, 1))
+hist(data, main="", col="darkred", xlim=c(1, 3))
+## Reset parameters (generates warnings as some of them are not editable)
+par(oldpar)
+```
+
 
 #### layout()
 
+Divides the graphical space into regions specified by a matrix.  
+plot.new() switches from one location to another, when a space needs to stay empty.
+
 ```{r}
 layout(matrix(c(1, 1, 
-                0, 2), ncol=2))
+                2, 3), ncol=2, byrow=TRUE))
+set.seed(1)
+data <- rnorm(100)
+hist(data, main="", xlim=c(-3, 3))
+plot.new()
+hist(data, main="", xlim=c(-3, 3))
 ```
-Divides the graphical space into regions specified by a matrix. plot.new() switches from one location to another.
 
-#### split.screen()
+layout(c(1)) resets the layout.
 
+
+#### See also
+
+* Function [split.screen()](http://www.inside-r.org/r-doc/graphics/screen)
+
+--------------------------------------------------------------------------------
 
 Exporting plots to files
 --------------------------------------------------------------------------------
 
-jpeg function produces a JPEG file
-png function produces a PNG file
-bmp function produces a bmp file
-pdf function produces a pdf file
-postscript function produces a postscript file
+* jpeg() produces a JPEG file
+* png() produces a PNG file
+* bmp() produces a bmp file
+* pdf() produces a pdf file
+* postscript() produces a postscript file
 
 
 ### PDF
 
-Create the pdf "device" where the plots will be written. Parameters called 'width' and 'height' controls the available space size.
+Create the pdf "device" where the plots will be written. Parameters called 'width' and 'height' (in inches) controls the available space size.
 ```{r, eval=FALSE}
 pdf("filename.pdf")
 ```
-Any subsequent call to a graphic function will write also to the pdf.
+Any subsequent call to a graphic function will write onto the PDF "device".
 
-To effectively write the file content.
-```{r}
-dev.off()
-```
+To effectively write the content of the device into a file, end your instructions with : ```dev.off()```
 
+--------------------------------------------------------------------------------
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
