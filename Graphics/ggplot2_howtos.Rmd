@@ -1,13 +1,10 @@
 Ggplot2: how to...
 ================================================================================
 
-> How to draw a multi-density plot from a data frame or a list
-> 
-> How to draw a scatterplot and assign color as a function of another variable
-> 
-> How to draw a regression line on a scatterplot
-> 
-> How to draw horizontal and vertical lines on a scatterplot
+* How to draw a multi-density plot from a data frame or a list
+* How to draw a scatterplot and assign color as a function of another variable
+* How to draw a regression line on a scatterplot
+* How to draw horizontal and vertical lines on a scatterplot
 
 --------------------------------------------------------------------------------
 
@@ -22,12 +19,13 @@ testDF <- list(
 )
 ```
 
-First step is to transform this wide format into long format. The resulting data frame will have two columns titled "values" (with the data) and "ind" (with labels corresponding to column names).
+First step is to transform this data in wide format into long format. The resulting data frame will have two columns titled "values" (with the data) and "ind" (with labels corresponding to column names).
 ```{r}
 longDF <- stack(testDF)
 ```
 
-And then we plot the densities. Library ggplot2 is loaded, and we use the qplot() function, specifying that "values" column contains the x coordinates (all data being in longDF), that we want the density to be displayed, and that values should be split according to the categories in "ind".
+Then we plot the densities. Library ggplot2 is loaded, and we use the qplot() function, specifying that "values" column contains the x coordinates (all data being in longDF), that we want the density to be displayed, and that values should be split according to the categories in "ind".
+
 ```{r}
 library("ggplot2")
 qplot(x=values, data=longDF, geom="density", colour=ind)
@@ -69,7 +67,7 @@ For continuous values, use the cut() function to define intervals and create a f
 ```{r}
 cutPetalArea <- cut(petalArea,
                     breaks=c(min(petalArea), mean(petalArea), max(petalArea)),
-                    include.lowest=T)
+                    include.lowest=TRUE)
 ```
 
 Then use this factor for the 'colour' parameter.
@@ -208,6 +206,9 @@ p <- ggplot(data=iris,
         geom_vline(xintercept=mean(iris$Petal.Length), colour="grey")
 p
 ```
+
+
+--------------------------------------------------------------------------------
 
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Celine Hernandez</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
