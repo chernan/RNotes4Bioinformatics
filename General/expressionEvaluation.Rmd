@@ -24,7 +24,7 @@ treatment10
 
 This function is able to evaluate a character string as if it was direct R code.
 
-```{r}
+```{r, tidy=FALSE}
 eval(parse(text=paste0("i <- ", "\"lots lots lots\"")))
 i
 ```
