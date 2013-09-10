@@ -16,21 +16,21 @@ alldocWd <- getwd()
 
 filesRmd <- data.frame(
     directory=rep(c("General", "Graphics"),
-                  times=c(8,3)
+                  times=c(8,4)
     ),
     fileName=c("dataManipulationAggregation",
                "dataStructures",
+               "inputOutput",
+               "stringManipulation",
                #"efficientProgramming",
                "expressionEvaluation",
-               "inputOutput",
                "objectOrientedProgramming",
-               "packageConstruction",
-               "stringManipulation",
                "workspaceManagement",
+               "packageConstruction",
                
                "base",
                "lattice",
-               "ggplot2",
+               "ggplot2", 
                "ggplot2_howtos"
     ))
 
@@ -67,7 +67,7 @@ footerHTMLText <- paste(footerHTMLText, collapse="\n")
 close(footerConnection)
 
 
-# fileRmd <- (filesRmd[1, ])
+# fileRmd <- c(directory="General", fileName="dataManipulationAggregation")
 apply(filesRmd, 1, FUN=function(fileRmd) {
     
     current_RmdWd <- paste0(projectWd, '/', fileRmd["directory"])
@@ -86,16 +86,18 @@ apply(filesRmd, 1, FUN=function(fileRmd) {
     ## Open HTML file to add style, header, footer
     htmlConnection <- file(filePathHtml)
     allHTMLText <- readLines(htmlConnection)
+    allHTMLText <- paste(allHTMLText, collapse="&&&")
     close(htmlConnection)
     
     ## Add style
-    newText <- sub(pattern='<head>', replacement=styleHTMLText, x=allHTMLText, perl=TRUE)
-    newText <- sub(pattern='<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>', replacement='', x=newText, fixed=TRUE)
+    newText <- sub(pattern='.*<title>', replacement=styleHTMLText, x=allHTMLText, perl=TRUE)
+    newText <- sub(pattern='</title>.*</head>', replacement='</title>&&&</head>', x=newText, perl=TRUE)
     ## Add header
     newText <- sub(pattern='<body>', replacement=headerHTMLText, x=newText, fixed=TRUE)
     ## Add footer
     newText <- sub(pattern='</body>', replacement=footerHTMLText, x=newText, fixed=TRUE)
-    
+
+    newText <- gsub(pattern='&&&',replacement="\n", x=newText)
     write(newText, file=filePathHtml)
     
 })
