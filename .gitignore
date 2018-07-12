@@ -11,3 +11,4 @@ RNotes4Bioinformatics.Rproj
 *.html
 figure/
 dist_doc/
+packrat/lib*/

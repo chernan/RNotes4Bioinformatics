@@ -56,9 +56,14 @@ library("ggplot2")
 data(iris)
 qplot(x=Petal.Length, y=Petal.Width, data=iris)
 ```
+
 and color the points depending on the petal area (approximated as length*width).
+
+Solution: using the colour argument of qplot(), or of aes() with ggplot().
+
 ```{r}
 petalArea <- iris$Petal.Length * iris$Petal.Width
+qplot(x=Petal.Length, y=Petal.Width, data=iris, colour=petalArea)
 ```
 
 ### Continuous values, or a large set of discrete values 
